@@ -1,57 +1,28 @@
 <template>
-  <DashboardLayout :activeSection="activeSection" @update-section="updateActiveSection">
-    <component :is="currentView" />
-  </DashboardLayout>
+  <a-config-provider :locale="locale">
+    <div id="app">
+      <router-view/>
+    </div>
+  </a-config-provider>
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue'
-import DashboardLayout from '@/components/layout/DashboardLayout.vue'
-import Dashboard from '@/views/Dashboard.vue'
-import UserManagement from '@/views/UserManagement.vue'
-import PostManagement from '@/views/PostManagement.vue'
-import CommentManagement from '@/views/CommentManagement.vue'
-import WordbookManagement from '@/views/WordbookManagement.vue'
+import { domTitle, setDocumentTitle } from '@/utils/domUtil'
+import { i18nRender } from '@/locales'
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    DashboardLayout,
-    Dashboard,
-    UserManagement,
-    PostManagement,
-    CommentManagement,
-    WordbookManagement
-  },
-  setup() {
-    const activeSection = ref('dashboard')
-
-    const currentView = computed(() => {
-      switch (activeSection.value) {
-        case 'dashboard':
-          return Dashboard
-        case 'users':
-          return UserManagement
-        case 'posts':
-          return PostManagement
-        case 'comments':
-          return CommentManagement
-        case 'wordbooks':
-          return WordbookManagement
-        default:
-          return Dashboard
-      }
-    })
-
-    function updateActiveSection(sectionName) {
-      activeSection.value = sectionName
-    }
-
+export default {
+  data () {
     return {
-      activeSection,
-      currentView,
-      updateActiveSection
+    }
+  },
+  computed: {
+    locale () {
+      // 只是为了切换语言时，更新标题
+      const { title } = this.$route.meta
+      title && (setDocumentTitle(`${i18nRender(title)} - ${domTitle}`))
+
+      return this.$i18n.getLocaleMessage(this.$store.getters.lang).antLocale
     }
   }
-})
+}
 </script>

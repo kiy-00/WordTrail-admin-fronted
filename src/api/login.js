@@ -1,12 +1,11 @@
 import request from '@/utils/request'
 
 const userApi = {
-  Login: '/auth/login',
+  // Login: '/auth/login',
+  Login: 'http://localhost:8080/api/users/login/account',
+  LoginbyEmail: 'http://localhost:8080/api/users/login/email',
   Logout: '/auth/logout',
-  ForgePassword: '/auth/forge-password',
-  Register: '/auth/register',
-  twoStepCode: '/auth/2step-code',
-  SendSms: '/account/sms',
+  recover: 'http://localhost:8080/api/users/login/recover',
   SendSmsErr: '/account/sms_err',
   // get my info
   UserInfo: '/user/info',
@@ -31,10 +30,16 @@ export function login (parameter) {
     data: parameter
   })
 }
-
-export function getSmsCaptcha (parameter) {
+export function loginbyEmail (parameter) {
   return request({
-    url: userApi.SendSms,
+    url: userApi.LoginbyEmail,
+    method: 'post',
+    data: parameter
+  })
+}
+export function getrecover (parameter) {
+  return request({
+    url: userApi.recover,
     method: 'post',
     data: parameter
   })

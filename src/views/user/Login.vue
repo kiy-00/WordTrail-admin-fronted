@@ -63,7 +63,7 @@
                 size="large"
                 :placeholder="$t('user.login.password.placeholder')"
                 v-decorator="[
-                  'password',
+                  'emailpassword',
                   {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
                 ]"
               >
@@ -96,10 +96,11 @@
 </template>
 
 <script>
-import md5 from 'md5'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { getSmsCaptcha } from '@/api/login'
+import { ACCESS_TOKEN, SHOW_NAME, ROLE_ID } from '@/store/mutation-types'
+import storage from 'store'
+import { login, loginbyEmail } from '@/api/login'
 
 export default {
   data () {
@@ -129,22 +130,42 @@ export default {
     handleSubmit (e) {
       e.preventDefault()
       const { validateFields } = this.form
-      const validateFieldsKey = this.customActiveKey === 'tab1' ? ['username', 'password'] : ['email', 'captcha']
+      const validateFieldsKey = this.customActiveKey === 'tab1' ? ['username', 'password'] : ['email', 'emailpassword']
 
       this.state.loginBtn = true
 
-      validateFields(validateFieldsKey, { force: true }, (err, values) => {
+      validateFields(validateFieldsKey, { force: true }, async (err, values) => {
         if (!err) {
-          const loginParams = { ...values }
-          if (this.customActiveKey === 'tab1') {
-            loginParams.password = md5(values.password)
+          try {
+            let response
+            if (this.customActiveKey === 'tab1') {
+              // 用户名和密码登录
+              response = await login({
+                username: values.username,
+                password: values.password // 对密码进行 MD5 加密
+              })
+            } else {
+              // 邮箱和验证码登录
+              response = await loginbyEmail({
+                email: values.email,
+                password: values.emailpassword
+              })
+            }
+
+            console.log('登录成功:', response)
+            const result = response.data
+            storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+            storage.set(SHOW_NAME, result.username)
+            storage.set(ROLE_ID, result.userId)
+            console.log('token in storage:')
+            console.log(storage.get(ACCESS_TOKEN))
+            this.loginSuccess()
+          } catch (error) {
+            console.error('登录失败:', error)
+            this.requestFailed(error)
+          } finally {
+            this.state.loginBtn = false
           }
-          this.Login(loginParams)
-            .then(() => this.loginSuccess())
-            .catch(err => this.requestFailed(err))
-            .finally(() => {
-              this.state.loginBtn = false
-            })
         } else {
           this.state.loginBtn = false
         }
@@ -165,19 +186,6 @@ export default {
               clearInterval(interval)
             }
           }, 1000)
-
-          getSmsCaptcha({ email: values.email }).then(() => {
-            this.$notification.success({
-              message: '提示',
-              description: '验证码已发送，请检查您的邮箱。',
-              duration: 8
-            })
-          }).catch(err => {
-            clearInterval(interval)
-            this.state.time = 60
-            this.state.smsSendBtn = false
-            this.requestFailed(err)
-          })
         }
       })
     },

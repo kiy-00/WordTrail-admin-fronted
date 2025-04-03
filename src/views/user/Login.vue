@@ -137,29 +137,39 @@ export default {
       validateFields(validateFieldsKey, { force: true }, async (err, values) => {
         if (!err) {
           try {
-            let response
             if (this.customActiveKey === 'tab1') {
               // 用户名和密码登录
-              response = await login({
+              login({
                 username: values.username,
                 password: values.password // 对密码进行 MD5 加密
-              })
+              }).then(response => {
+                  const result = response
+                  console.log('登录成功:', response)
+                  storage.set(ACCESS_TOKEN, result.token)
+                  storage.set(SHOW_NAME, result.username)
+                  storage.set(ROLE_ID, result.userId)
+                  console.log('token in storage:')
+                  console.log(storage.get(ACCESS_TOKEN))
+                  this.loginSuccess()
+                }
+              )
             } else {
               // 邮箱和验证码登录
-              response = await loginbyEmail({
+              await loginbyEmail({
                 email: values.email,
                 password: values.emailpassword
-              })
+              }).then(response => {
+                  const result = response
+                  console.log('登录成功:', response)
+                  storage.set(ACCESS_TOKEN, result.token)
+                  storage.set(SHOW_NAME, result.username)
+                  storage.set(ROLE_ID, result.userId)
+                  console.log('token in storage:')
+                  console.log(storage.get(ACCESS_TOKEN))
+                  this.loginSuccess()
+                }
+              )
             }
-
-            console.log('登录成功:', response)
-            const result = response.data
-            storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            storage.set(SHOW_NAME, result.username)
-            storage.set(ROLE_ID, result.userId)
-            console.log('token in storage:')
-            console.log(storage.get(ACCESS_TOKEN))
-            this.loginSuccess()
           } catch (error) {
             console.error('登录失败:', error)
             this.requestFailed(error)

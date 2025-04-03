@@ -1,4 +1,9 @@
 export const ACCESS_TOKEN = 'Access-Token'
+export const SHOW_NAME = 'show-name'
+export const ROLE_ID = ''
+export const DETAIL = {}
+export const PERMISSIONS = {}
+export const SHOW_AVATAR = 'show-avatar'
 
 export const SIDEBAR_TYPE = 'sidebar_type'
 export const TOGGLE_MOBILE_TYPE = 'is_mobile'

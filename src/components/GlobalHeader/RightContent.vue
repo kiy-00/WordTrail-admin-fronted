@@ -52,7 +52,7 @@ export default {
   mounted () {
     setTimeout(() => {
       this.currentUser = {
-        name: storage.get(SHOW_NAME),
+        name: `管理员：${storage.get(SHOW_NAME)}`,
         avatar: storage.get(SHOW_AVATAR)
       }
     }, 1500)

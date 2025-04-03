@@ -6,15 +6,6 @@
     </span>
     <template v-slot:overlay>
       <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
-        <a-menu-item v-if="menu" key="center" @click="handleToCenter">
-          <a-icon type="user" />
-          {{ $t('menu.account.center') }}
-        </a-menu-item>
-        <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
-          <a-icon type="setting" />
-          {{ $t('menu.account.settings') }}
-        </a-menu-item>
-        <a-menu-divider v-if="menu" />
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
           {{ $t('menu.account.logout') }}
@@ -71,10 +62,10 @@ export default {
 <style lang="less" scoped>
 .ant-pro-drop-down {
   :deep(.action) {
-    margin-right: 8px;
+    margin-right: 20px;
   }
   :deep(.ant-dropdown-menu-item) {
-    min-width: 160px;
+    min-width: 100px;
   }
 }
 </style>

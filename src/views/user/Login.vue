@@ -141,7 +141,7 @@ export default {
               // 用户名和密码登录
               login({
                 username: values.username,
-                password: values.password // 对密码进行 MD5 加密
+                password: values.password
               }).then(response => {
                   const result = response
                   console.log('登录成功:', response)
@@ -152,7 +152,14 @@ export default {
                   console.log(storage.get(ACCESS_TOKEN))
                   this.loginSuccess()
                 }
-              )
+              ).catch(err => {
+                console.error('登录失败:', err)
+                this.$notification.error({
+                  message: '错误',
+                  description: err?.response?.data?.message || err.message || '请求出现错误，请稍后再试',
+                  duration: 4
+                })
+              })
             } else {
               // 邮箱和验证码登录
               await loginbyEmail({
@@ -168,7 +175,14 @@ export default {
                   console.log(storage.get(ACCESS_TOKEN))
                   this.loginSuccess()
                 }
-              )
+              ).catch(err => {
+                console.error('登录失败:', err)
+                this.$notification.error({
+                  message: '错误',
+                  description: err?.response?.data?.message || err.message || '请求出现错误，请稍后再试',
+                  duration: 4
+                })
+              })
             }
           } catch (error) {
             console.error('登录失败:', error)

@@ -44,7 +44,16 @@ export function getrecover (parameter) {
     data: parameter
   })
 }
-
+export function settingsgetrecover (parameter, Token) {
+  return request({
+    url: userApi.recover,
+    method: 'post',
+    data: parameter,
+    headers: {
+      'access-token': Token
+    }
+  })
+}
 export function getInfo () {
   return request({
     url: userApi.UserInfo,

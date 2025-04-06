@@ -44,13 +44,13 @@ const constantRouterComponents = {
   Exception500: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
 
   // account
-  AccountCenter: () => import('@/views/account/center'),
-  AccountSettings: () => import('@/views/account/settings/Index'),
-  BasicSetting: () => import('@/views/account/settings/BasicSetting'),
-  SecuritySettings: () => import('@/views/account/settings/Security'),
-  CustomSettings: () => import('@/views/account/settings/Custom'),
-  BindingSettings: () => import('@/views/account/settings/Binding'),
-  NotificationSettings: () => import('@/views/account/settings/Notification')
+  // AccountCenter: () => import('@/views/account/center'),
+  AccountSettings: () => import('@/views/account/acoountsettings')
+  // BasicSetting: () => import('@/views/account/settings/BasicSetting'),
+  // SecuritySettings: () => import('@/views/account/settings/Security'),
+  // CustomSettings: () => import('@/views/account/settings/Custom'),
+  // BindingSettings: () => import('@/views/account/settings/Binding'),
+  // NotificationSettings: () => import('@/views/account/settings/Notification')
 
   // 'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork')
 }

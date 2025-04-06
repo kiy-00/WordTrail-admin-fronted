@@ -173,9 +173,23 @@ export const asyncRouterMap = [
             meta: { title: 'menu.exception.server-error', permission: ['exception'] }
           }
         ]
-      }
+      },
       // account
-
+      {
+        path: '/account',
+        name: 'account',
+        component: RouteView,
+        redirect: '/account/accountsettings',
+        meta: { title: 'menu.account', icon: 'user', permission: ['user'] },
+        children: [
+          {
+              path: '/account/accountsettings',
+              name: 'settings',
+              component: () => import('@/views/account/accountsettings'),
+              meta: { title: 'menu.account.settings', permission: [ 'user' ] }
+          }
+        ]
+      }
       // other
       /*
       {

@@ -7,55 +7,55 @@
             :label="$t('account.settings.basic.nickname')"
           >
             <a-input :disabled="true" :placeholder="$t(showname)" />
-    </a-form-item>
-    <a-form-item
-        :label="$t('account.settings.basic.password')"
-        :required="false"
-    >
-    <a-input v-model="changepassword" :placeholder="$t('account.settings.basic.change-password')" />
-  </a-form-item>
-    <a-form-item
-        :label="$t('account.settings.basic.key')"
-        :required="false"
-    >
-    <a-input v-model="changekey" :placeholder="$t('account.settings.basic.change-key')" />
-    </a-form-item>
-    <a-form-item>
-      <a-button type="primary" @click="handleUpdate">{{ $t('account.settings.basic.update') }}</a-button>
-    </a-form-item>
-    </a-form>
+          </a-form-item>
+          <a-form-item
+            :label="$t('account.settings.basic.password')"
+            :required="false"
+          >
+            <a-input v-model="changepassword" :placeholder="$t('account.settings.basic.change-password')" />
+          </a-form-item>
+          <a-form-item
+            :label="$t('account.settings.basic.key')"
+            :required="false"
+          >
+            <a-input v-model="changekey" :placeholder="$t('account.settings.basic.change-key')" />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="handleUpdate">{{ $t('account.settings.basic.update') }}</a-button>
+          </a-form-item>
+        </a-form>
 
-</a-col>
-<a-col :order="1" :md="24" :lg="8" :style="{ minHeight: '180px' }">
-  <a-col :span="4" :offset="5">
-    <div style="position: relative">
-      <a-avatar
-        :src="avatarUrl"
-        style="width: 128px; height: 128px"
-        @mouseenter="changeAvatarButtonShow = true"
-      />
-      <div
-        v-if="changeAvatarButtonShow"
-        @mouseleave="changeAvatarButtonShow = false"
-        style="position: absolute; top: 0; left: 0; width: 128px; height: 128px; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;"
-      >
-        <a @click="triggerFileInput" style="color: white; cursor: pointer;">更换头像</a>
-        <input
-          type="file"
-          ref="changeAvatarInput"
-          style="display: none"
-          @change="updateAvatar"
-        />
-      </div>
-    </div>
-  </a-col>
-</a-col>
+      </a-col>
+      <a-col :order="1" :md="24" :lg="8" :style="{ minHeight: '180px' }">
+        <a-col :span="4" :offset="5">
+          <div style="position: relative">
+            <a-avatar
+              :src="avatarUrl"
+              style="width: 128px; height: 128px"
+              @mouseenter="changeAvatarButtonShow = true"
+            />
+            <div
+              v-if="changeAvatarButtonShow"
+              @mouseleave="changeAvatarButtonShow = false"
+              style="position: absolute; top: 0; left: 0; width: 128px; height: 128px; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;"
+            >
+              <a @click="triggerFileInput" style="color: white; cursor: pointer;">更换头像</a>
+              <input
+                type="file"
+                ref="changeAvatarInput"
+                style="display: none"
+                @change="updateAvatar"
+              />
+            </div>
+          </div>
+        </a-col>
+      </a-col>
 
-</a-row>
+    </a-row>
 
-<avatar-modal ref="modal" @ok="setavatar"/>
+    <avatar-modal ref="modal" @ok="setavatar"/>
 
-</div>
+  </div>
 </template>
 
 <script>

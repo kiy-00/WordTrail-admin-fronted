@@ -12,13 +12,13 @@
             :label="$t('account.settings.basic.password')"
             :required="false"
           >
-            <a-input v-model="changepassword" :placeholder="$t('account.settings.basic.change-password')" />
+            <a-input-password v-model="changepassword" :placeholder="$t('account.settings.basic.change-password')" />
           </a-form-item>
           <a-form-item
             :label="$t('account.settings.basic.key')"
             :required="false"
           >
-            <a-input v-model="changekey" :placeholder="$t('account.settings.basic.change-key')" />
+            <a-input-password v-model="changekey" :placeholder="$t('account.settings.basic.change-key')" />
           </a-form-item>
           <a-form-item>
             <a-button type="primary" @click="handleUpdate">{{ $t('account.settings.basic.update') }}</a-button>
@@ -129,15 +129,27 @@ export default {
               newpassword: this.changepassword
             }, `${storage.get(ACCESS_TOKEN)}`).then(response => {
                 console.log(response)
-                this.$message.success('密码重置成功，请使用新密码登录。')
+                this.$notification.success({
+                  message: '成功',
+                  description: '密码重置成功，请使用新密码登录。',
+                  duration: 8
+                })
               }
-            )
-        } catch (error) {
+            ).catch(error => {
                 console.error('密码重置失败:', error)
-                this.requestFailed(error)
-              } finally {
-                this.state.loginBtn = false
-              }
+                this.$notification.error({
+                  message: '失败',
+                  description: '密码重置失败，请稍后再试。',
+                  duration: 8
+                })
+                this.loginBtn = false
+              })
+        } catch (error) {
+          console.error('密码重置失败:', error)
+          this.requestFailed(error)
+        } finally {
+          this.loginBtn = false
+        }
     },
     setavatar (url) {
       this.option.img = url

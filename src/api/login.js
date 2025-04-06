@@ -50,7 +50,7 @@ export function settingsgetrecover (parameter, Token) {
     method: 'post',
     data: parameter,
     headers: {
-      'access-token': Token
+      'Authorization': `Bearer ${Token}`
     }
   })
 }

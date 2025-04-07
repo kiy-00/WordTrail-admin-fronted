@@ -30,7 +30,7 @@
         <a-col :span="4" :offset="5">
           <div style="position: relative">
             <a-avatar
-              :src="avatarUrl"
+              :src="avatarPreview || avatarUrl"
               style="width: 128px; height: 128px"
               @mouseenter="changeAvatarButtonShow = true"
             />
@@ -75,6 +75,7 @@ export default {
       // cropper
       showname: `${storage.get(SHOW_NAME)}`,
       avatarUrl: `${storage.get(SHOW_AVATAR)}`,
+      avatarPreview: null, // 本地预览的头像 URL
       changekey: ``,
       changepassword: ``,
       preview: {},
@@ -99,26 +100,41 @@ export default {
   },
   methods: {
     updateAvatar (e) {
-      console.log(e.target.files)
-      const formData = new FormData()
-      formData.append('file', e.target.files[0])
-      // 这里写一个上传头像的接口
-      request({
-        url: '/account/UploadAvatar',
-        method: 'post',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        data: formData
-      })
-        .then(res => {
-          console.log(res)
-          this.avatarUrl = res.data
-          storage.set(SHOW_AVATAR, res.data)
-          this.$message.success('更换头像成功！')
+      const file = e.target.files[0]
+      if (file) {
+        // 校验文件类型和大小
+        if (!file.type.startsWith('image/')) {
+          this.$message.error('请选择图片文件！')
+          return
+        }
+        if (file.size > 2 * 1024 * 1024) { // 限制文件大小为 2MB
+          this.$message.error('图片大小不能超过 2MB！')
+          return
+        }
+
+        // 创建 FormData 对象
+        const formData = new FormData()
+        formData.append('file', file)
+        // 这里可以添加其他需要上传的参数
+        console.log('上传的文件:', file)
+        // 调用上传接口
+        request({
+          url: '/account/UploadAvatar', // 后端上传接口地址
+          method: 'post',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          data: formData
         })
-        .catch(err => {
-          console.error('上传头像失败:', err)
-          this.$message.error('更换头像失败，请重试！')
-        })
+          .then(res => {
+            console.log('上传成功:', res)
+            this.avatarUrl = res.data.url // 更新头像 URL
+            storage.set(SHOW_AVATAR, res.data.url) // 存储到本地
+            this.$message.success('头像上传成功！')
+          })
+          .catch(err => {
+            console.error('上传失败:', err)
+            this.$message.error('头像上传失败，请重试！')
+          })
+      }
     },
     async handleUpdate () {
       try {
@@ -156,6 +172,24 @@ export default {
     },
     triggerFileInput () {
       this.$refs.changeAvatarInput.click()
+    },
+    previewAvatar (e) {
+      const file = e.target.files[0]
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          this.$message.error('请选择图片文件！')
+          return
+        }
+        if (file.size > 2 * 1024 * 1024) {
+          this.$message.error('图片大小不能超过 2MB！')
+          return
+        }
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          this.avatarPreview = event.target.result // 设置本地预览的头像 URL
+        }
+        reader.readAsDataURL(file) // 将文件读取为 Data URL
+      }
     }
   }
 }

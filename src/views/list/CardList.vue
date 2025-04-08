@@ -1,72 +1,228 @@
 <template>
-  <page-header-wrapper
-    content="可以查看所有的词书"
-  >
+  <page-header-wrapper content="可以查看所有的词书">
     <template v-slot:extraContent>
-      <div style="width: 155px; margin-top: -20px;"><img style="width: 100%" :src="extraImage" /></div>
+      <div style="width: 155px; margin-top: -20px;">
+        <img style="width: 100%" :src="extraImage" />
+      </div>
     </template>
-    <a-list
-      rowKey="id"
-      :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}"
-      :dataSource="dataSource"
-      class="card-list"
-    >
-      <a-list-item slot="renderItem" slot-scope="item">
-        <template v-if="!item || item.id === undefined">
-          <a-button class="new-btn" type="dashed">
-            <a-icon type="plus"/>
-            新增产品
-          </a-button>5d
-        </template>
-        <template v-else>
-          <a-card :hoverable="true">
-            <a-card-meta>
-              <a slot="title">{{ item.title }}</a>
-              <a-avatar class="card-avatar" slot="avatar" :src="item.avatar" size="large"/>
-              <div class="meta-content" slot="description">{{ item.content }}</div>
-            </a-card-meta>
-            <template class="ant-card-actions" slot="actions">
-              <a>操作一</a>
-              <a>操作二</a>
-            </template>
-          </a-card>
-        </template>
-      </a-list-item>
-    </a-list>
+    <a-card
+      style="margin-top: 24px"
+      :bordered="false"
+      title="标准列表">
+      <div slot="extra">
+        <a-radio-group v-model="status">
+          <a-radio-button value="all">全部</a-radio-button>
+          <a-radio-button value="english">英语</a-radio-button>
+          <a-radio-button value="france">法语</a-radio-button>
+        </a-radio-group>
+        <a-input-search style="margin-left: 16px; width: 272px;" />
+      </div>
+      <a-table
+        :dataSource="dataSource"
+        rowKey="id"
+        bordered
+        style="margin-top: 10px;"
+      >
+        <!-- 名称列 -->
+        <a-table-column
+          title="名称"
+          dataIndex="title"
+          key="title"
+        />
+        <!-- 语言列 -->
+        <a-table-column
+          title="语言"
+          dataIndex="language"
+          key="language"
+        />
+        <!-- 单词个数列 -->
+        <a-table-column
+          title="单词个数"
+          dataIndex="wordCount"
+          key="wordCount"
+        />
+        <!-- 操作列 -->
+        <a-table-column
+          title="操作"
+          key="actions"
+        >
+          <template #default="{ record }">
+            <div slot="actions">
+              <a @click="viewWordBook(record)">查看词书</a>
+            </div>
+            <div slot="actions">
+              <a @click="deleteWordBook(record.id)">删除词书</a>
+            </div>
+          </template>
+        </a-table-column>
+      </a-table>
+
+      <!-- 查看词书的弹窗 -->
+      <a-modal
+        :visible="viewModalVisible"
+        :title="currentWordBook?.title || '词书详情'"
+        width="600px"
+        @cancel="closeViewModal"
+      >
+        <a-list
+          :dataSource="currentWordBook?.words || []"
+          bordered
+          :renderItem="renderWordItem"
+        >
+        </a-list>
+      </a-modal>
+    </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-
-const dataSource = []
-dataSource.push({})
-for (let i = 0; i < 11; i++) {
-  dataSource.push({
-    id: i,
-    title: 'Alipay',
-    avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-    content: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
-  })
-}
-
 export default {
   name: 'CardList',
   data () {
-    this.tabList = [
-      { key: 'tab1', tab: '快速开始' },
-      { key: 'tab2', tab: '产品简介' },
-      { key: 'tab3', tab: '产品文档' }
-    ]
     return {
-      tabActiveKey: 'tab1',
-
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-      dataSource
+      dataSource: [
+        {
+          id: 1,
+          title: '英语词书',
+          language: '英语',
+          wordCount: 100,
+          words: [
+            { word: 'apple', meaning: '苹果', synonyms: ['fruit'] },
+            { word: 'banana', meaning: '香蕉', synonyms: ['fruit'] }
+          ]
+        },
+        {
+          id: 2,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 3,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 4,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 5,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 6,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 7,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 8,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 9,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 10,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        },
+        {
+          id: 11,
+          title: '法语词书',
+          language: '法语',
+          wordCount: 80,
+          words: [
+            { word: 'bonjour', meaning: '你好', synonyms: ['salutation'] },
+            { word: 'merci', meaning: '谢谢', synonyms: ['gratitude'] }
+          ]
+        }
+      ],
+      viewModalVisible: false,
+      currentWordBook: null
     }
   },
   methods: {
-    testFun () {
-      this.$message.info('快速开始被点击！')
+    // 查看词书
+    viewWordBook (record) {
+      this.currentWordBook = record
+      this.viewModalVisible = true
+    },
+    // 关闭查看弹窗
+    closeViewModal () {
+      this.viewModalVisible = false
+      this.currentWordBook = null
+    },
+    // 删除词书
+    deleteWordBook (id) {
+      this.dataSource = this.dataSource.filter((item) => item.id !== id)
+      this.$message.success('词书已删除！')
+    },
+    // 渲染单词列表项
+    renderWordItem (item) {
+      return (
+        <a-list-item>
+          <a-list-item-meta
+            title={item.word}
+            description={`词义: ${item.meaning}, 近义词: ${item.synonyms.join(', ')}`}
+          />
+        </a-list-item>
+      )
     }
   }
 }
@@ -98,7 +254,6 @@ export default {
       text-overflow: ellipsis;
       display: -webkit-box;
       height: 64px;
-      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
 
       margin-bottom: 1em;

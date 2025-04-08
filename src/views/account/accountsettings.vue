@@ -117,6 +117,7 @@ export default {
         formData.append('file', file)
         // 这里可以添加其他需要上传的参数
         console.log('上传的文件:', file)
+        console.log('FormData:', formData)
         // 调用上传接口
         request({
           url: '/account/UploadAvatar', // 后端上传接口地址

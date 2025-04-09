@@ -50,12 +50,10 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.currentUser = {
-        name: `管理员：${storage.get(SHOW_NAME)}`,
-        avatar: storage.get(SHOW_AVATAR)
-      }
-    }, 1500)
+    this.currentUser = {
+      name: `管理员：${storage.get(SHOW_NAME)}`,
+      avatar: `/${storage.get(SHOW_AVATAR)}`
+    }
   }
 }
 </script>

@@ -48,10 +48,7 @@ export function settingsgetrecover (parameter, Token) {
   return request({
     url: userApi.recover,
     method: 'post',
-    data: parameter,
-    headers: {
-      'Authorization': `Bearer ${Token}`
-    }
+    data: parameter
   })
 }
 export function getInfo () {

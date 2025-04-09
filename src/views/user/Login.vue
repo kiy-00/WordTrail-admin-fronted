@@ -98,7 +98,7 @@
 <script>
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { ACCESS_TOKEN, SHOW_NAME, ROLE_ID } from '@/store/mutation-types'
+import { ACCESS_TOKEN, SHOW_NAME, SHOW_AVATAR } from '@/store/mutation-types'
 import storage from 'store'
 import { login, loginbyEmail } from '@/api/login'
 
@@ -146,8 +146,8 @@ export default {
                   const result = response
                   console.log('登录成功:', response)
                   storage.set(ACCESS_TOKEN, result.token)
-                  storage.set(SHOW_NAME, result.username)
-                  storage.set(ROLE_ID, result.userId)
+                  storage.set(SHOW_NAME, values.username)
+                  storage.set(SHOW_AVATAR, result.avatarUrl)
                   console.log('token in storage:')
                   console.log(storage.get(ACCESS_TOKEN))
                   this.loginSuccess()
@@ -170,7 +170,7 @@ export default {
                   console.log('登录成功:', response)
                   storage.set(ACCESS_TOKEN, result.token)
                   storage.set(SHOW_NAME, result.username)
-                  storage.set(ROLE_ID, result.userId)
+                  storage.set(SHOW_AVATAR, result.avatarUrl)
                   console.log('token in storage:')
                   console.log(storage.get(ACCESS_TOKEN))
                   this.loginSuccess()

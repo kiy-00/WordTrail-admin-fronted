@@ -6,7 +6,8 @@ const api = {
   service: '/service',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
-  orgTree: '/org/tree'
+  orgTree: '/org/tree',
+  uploadavatar: 'http://localhost:8080/account/UploadAvatar'
 }
 
 export default api
@@ -24,6 +25,17 @@ export function getRoleList (parameter) {
     url: api.role,
     method: 'get',
     params: parameter
+  })
+}
+
+export function uploadavatar (parameter) {
+  return request({
+    url: api.uploadavatar,
+    method: 'post',
+    data: parameter,
+    Headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 

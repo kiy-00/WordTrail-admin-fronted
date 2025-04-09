@@ -136,7 +136,8 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import { Radar } from '@/components'
-
+import { SHOW_AVATAR } from '@/store/mutation-types'
+import storage from 'store'
 import { getRoleList, getServiceList } from '@/api/manage'
 
 const DataSet = require('@antv/data-set')
@@ -208,7 +209,7 @@ export default {
     currentUser () {
       return {
         name: 'Serati Ma',
-        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
+        avatar: `/${storage.get(SHOW_AVATAR)}`
       }
     },
     userInfo () {

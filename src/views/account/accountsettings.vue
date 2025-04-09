@@ -30,7 +30,7 @@
         <a-col :span="4" :offset="5">
           <div style="position: relative">
             <a-avatar
-              :src="avatarPreview || avatarUrl"
+              :src="avatarUrl"
               style="width: 128px; height: 128px"
               @mouseenter="changeAvatarButtonShow = true"
             />
@@ -63,7 +63,7 @@ import AvatarModal from './settings/AvatarModal'
 import { baseMixin } from '@/store/app-mixin'
 import { ACCESS_TOKEN, SHOW_NAME, SHOW_AVATAR } from '@/store/mutation-types'
 import storage from 'store'
-import request from '@/utils/request'
+import { uploadavatar } from '@/api/manage' // 导入 getrecover 方法
 import { settingsgetrecover } from '@/api/login' // 导入 getrecover 方法
 export default {
   mixins: [baseMixin],
@@ -74,8 +74,7 @@ export default {
     return {
       // cropper
       showname: `${storage.get(SHOW_NAME)}`,
-      avatarUrl: `${storage.get(SHOW_AVATAR)}`,
-      avatarPreview: null, // 本地预览的头像 URL
+      avatarUrl: `/${storage.get(SHOW_AVATAR)}`,
       changekey: ``,
       changepassword: ``,
       preview: {},
@@ -115,20 +114,16 @@ export default {
         // 创建 FormData 对象
         const formData = new FormData()
         formData.append('file', file)
+        formData.append('username', this.showname)
         // 这里可以添加其他需要上传的参数
         console.log('上传的文件:', file)
         console.log('FormData:', formData)
         // 调用上传接口
-        request({
-          url: '/account/UploadAvatar', // 后端上传接口地址
-          method: 'post',
-          headers: { 'Content-Type': 'multipart/form-data' },
-          data: formData
-        })
+        uploadavatar(formData)
           .then(res => {
             console.log('上传成功:', res)
-            this.avatarUrl = res.data.url // 更新头像 URL
-            storage.set(SHOW_AVATAR, res.data.url) // 存储到本地
+            this.avatarUrl = `/${res.data.avatarUrl}` // 更新头像 URL
+            storage.set(SHOW_AVATAR, res.data.avatarUrl) // 存储到本地
             this.$message.success('头像上传成功！')
           })
           .catch(err => {

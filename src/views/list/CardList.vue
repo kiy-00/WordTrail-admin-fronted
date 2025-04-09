@@ -12,13 +12,14 @@
       <div slot="extra">
         <a-radio-group v-model="status">
           <a-radio-button value="all">全部</a-radio-button>
-          <a-radio-button value="english">英语</a-radio-button>
-          <a-radio-button value="france">法语</a-radio-button>
+          <a-radio-button value="英语">英语</a-radio-button>
+          <a-radio-button value="法语">法语</a-radio-button>
         </a-radio-group>
         <a-input-search style="margin-left: 16px; width: 272px;" />
       </div>
       <a-table
-        :dataSource="dataSource"
+        :dataSource="filteredPermissions"
+        :pagination="{ pageSize: 5 }"
         rowKey="id"
         bordered
         style="margin-top: 10px;"
@@ -63,13 +64,27 @@
         :title="currentWordBook?.title || '词书详情'"
         width="600px"
         @cancel="closeViewModal"
+      > <a-table
+        :dataSource="currentWordBook?.words || []"
+        rowKey="id"
+        bordered
       >
-        <a-list
-          :dataSource="currentWordBook?.words || []"
-          bordered
-          :renderItem="renderWordItem"
-        >
-        </a-list>
+        <a-table-column
+          title="单词"
+          dataIndex="word"
+          key="word"
+        />
+        <a-table-column
+          title="词性"
+          dataIndex="partOfSpeech"
+          key="partOfSpeech"
+        />
+        <a-table-column
+          title="释义"
+          dataIndex="definition"
+          key="definition"
+        />
+      </a-table>
       </a-modal>
     </a-card>
   </page-header-wrapper>
@@ -80,6 +95,7 @@ export default {
   name: 'CardList',
   data () {
     return {
+      status: 'all',
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
       dataSource: [
         {
@@ -197,6 +213,15 @@ export default {
       currentWordBook: null
     }
   },
+  computed: {
+    // 根据状态过滤词书
+    filteredPermissions () {
+      if (this.status === 'all') {
+        return this.dataSource
+      }
+      return this.dataSource.filter(item => item.language === this.status)
+    }
+  },
   methods: {
     // 查看词书
     viewWordBook (record) {
@@ -212,17 +237,6 @@ export default {
     deleteWordBook (id) {
       this.dataSource = this.dataSource.filter((item) => item.id !== id)
       this.$message.success('词书已删除！')
-    },
-    // 渲染单词列表项
-    renderWordItem (item) {
-      return (
-        <a-list-item>
-          <a-list-item-meta
-            title={item.word}
-            description={`词义: ${item.meaning}, 近义词: ${item.synonyms.join(', ')}`}
-          />
-        </a-list-item>
-      )
     }
   }
 }

@@ -7,7 +7,9 @@ const api = {
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
   orgTree: '/org/tree',
-  uploadavatar: 'http://localhost:8080/account/UploadAvatar'
+  uploadavatar: 'http://localhost:8080/account/UploadAvatar',
+  getwordbook: 'http://localhost:8080/api/wordbooks',
+  addwordbook: 'http://localhost:8080/api/wordbooks/addWordbook'
 }
 
 export default api
@@ -17,6 +19,33 @@ export function getUserList (parameter) {
     url: api.user,
     method: 'get',
     params: parameter
+  })
+}
+
+export function getwordbook () {
+  return request({
+    url: api.getwordbook,
+    method: 'get'
+  })
+}
+
+export function getcurrentwordbook (workbookid) {
+  return request({
+    url: `http://localhost:8080/api/wordbooks/${workbookid}`,
+    method: 'get'
+  })
+}
+export function deletecurrentwordbook (workbookid) {
+  return request({
+    url: `http://localhost:8080/api/wordbooks/${workbookid}`,
+    method: 'delete'
+  })
+}
+export function addwordbook (parameter) {
+  return request({
+    url: api.addwordbook,
+    method: 'post',
+    data: parameter
   })
 }
 

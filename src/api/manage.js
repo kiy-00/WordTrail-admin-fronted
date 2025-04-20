@@ -29,16 +29,32 @@ export function getwordbook () {
   })
 }
 
-export function getcurrentwordbook (workbookid) {
+export function getcurrentwordbook (wordbook) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${workbookid}`,
+    url: `http://localhost:8080/api/wordbooks/${wordbook}`,
     method: 'get'
   })
 }
-export function deletecurrentwordbook (workbookid) {
+export function deletecurrentwordbook (wordbook) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${workbookid}`,
+    url: `http://localhost:8080/api/wordbooks/${wordbook}`,
     method: 'delete'
+  })
+}
+export function deletevocabularies (wordbook, wordIds) {
+  return request({
+    url: `http://localhost:8080/api/wordbooks/${wordbook}/vocabularies`,
+    method: 'delete',
+    data: {
+      wordIds // 这里就是关键，把第二个参数赋值给 wordIds 字段！
+    }
+  })
+}
+export function addvocabularies (wordbook, parameter) {
+  return request({
+    url: `http://localhost:8080/api/wordbooks/${wordbook}/vocabularies`,
+    method: 'post',
+    data: parameter
   })
 }
 export function addwordbook (parameter) {

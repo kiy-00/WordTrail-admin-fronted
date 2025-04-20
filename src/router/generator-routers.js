@@ -34,6 +34,9 @@ const constantRouterComponents = {
   ProfileBasic: () => import('@/views/profile/basic'),
   ProfileAdvanced: () => import('@/views/profile/advanced/Advanced'),
 
+  // community
+  CommunityList: () => import('@/views/community/CommunityList'),
+  CommunityDetail: () => import('@/views/community/CommunityDetail'),
   // result
   ResultSuccess: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
   ResultFail: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),

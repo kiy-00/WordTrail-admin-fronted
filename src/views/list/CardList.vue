@@ -95,12 +95,14 @@
         :title="`词书详情 - 名称: ${currentWordBook?.bookName || ''}`"
         width="1000px"
         @cancel="closeViewModal"
-        :scroll="{ x: '100%' }"
         :footer="null"
       >
         <p>词书 ID: {{ currentWordBook?.id }}</p>
+        <a-button @click="openAddVocabularyModal" style="margin-bottom: 16px;">
+          新加词汇
+        </a-button>
         <a-table
-          :dataSource="currentWorddata"
+          :dataSource="currentWorddata.words"
           rowKey="id"
           bordered
           :pagination="{ pageSize: 5 }"
@@ -133,7 +135,7 @@
           <a-table-column
             title="词性/释义"
             key="partOfSpeechList"
-            width="50%"
+            width="40%"
           >
             <template #default="scope">
               <div v-for="(part, index) in scope.partOfSpeechList" :key="index" style="margin-bottom: 8px;">
@@ -150,6 +152,13 @@
                   </ul>
                 </div>
               </div>
+            </template>
+          </a-table-column>
+
+          <!-- 操作列 -->
+          <a-table-column title="操作" key="actions" width="10%">
+            <template #default="scope">
+              <a @click="deletewordbookvocabularies(scope)">删除词汇</a>
             </template>
           </a-table-column>
         </a-table>
@@ -188,13 +197,45 @@
               </a-form-item>
 
               <a-form-item label="音标">
-                <a-input v-model="word.phonetics[0]" />
+                <a-input v-model="word.phonetics[0].ipa" />
+              </a-form-item>
+              <a-form-item label="音标音频">
+                <a-input v-model="word.phonetics[0].audio" />
               </a-form-item>
 
               <a-form-item label="词性">
-                <a-input v-model="word.partOfSpeechList[0]" />
+                <a-select v-model="word.partOfSpeechList[0].type" >
+                  <a-select-option value="n.">n.名词</a-select-option>
+                  <a-select-option value="v.">v.动词</a-select-option>
+                  <a-select-option value="adj.">adj.形容词</a-select-option>
+                  <a-select-option value="adv.">adv.副词</a-select-option>
+                  <a-select-option value="conj.">conj.连词</a-select-option>
+                  <a-select-option value="prep.">prep.介词</a-select-option>
+                  <a-select-option value="pron.">pron.代词</a-select-option>
+                  <a-select-option value="art.">art.冠词</a-select-option>
+                  <a-select-option value="num.">num.数词</a-select-option>
+                  <a-select-option value="aux.">aux.助动词</a-select-option>
+                  <a-select-option value="part.">part.分词</a-select-option>
+                  <a-select-option value="inf.">inf.不定式</a-select-option>
+                  <a-select-option value="sub.">sub.从属连词</a-select-option>
+                  <a-select-option value="ind.">ind.间接引语</a-select-option>
+                  <a-select-option value="rel.">rel.关系代词</a-select-option>
+                  <a-select-option value="dem.">dem.指示代词</a-select-option>
+                  <a-select-option value="int.">int.疑问代词</a-select-option>
+                  <a-select-option value="ord.">ord.序数词</a-select-option>
+                  <a-select-option value="dis.">dis.分词</a-select-option>
+                  <a-select-option value="loc.">loc.地点副词</a-select-option>
+                </a-select>
               </a-form-item>
-
+              <a-form-item label="释义">
+                <a-input v-model="word.partOfSpeechList[0].definitions" />
+              </a-form-item>
+              <a-form-item label="例句">
+                <a-input v-model="word.partOfSpeechList[0].examples[0].sentence" />
+              </a-form-item>
+              <a-form-item label="例句释义">
+                <a-input v-model="word.partOfSpeechList[0].examples[0].translation" />
+              </a-form-item>
               <a-form-item label="标签">
                 <a-input v-model="word.tags[0]" placeholder="多个标签可逗号分隔" />
               </a-form-item>
@@ -222,12 +263,74 @@
           </a-button>
         </a-form>
       </a-modal>
+      <!-- 添加词汇的弹窗 -->
+      <a-modal
+        title="添加词汇"
+        :visible="addVocabularyModalVisible"
+        @cancel="closeAddVocabularyModal"
+        @ok="submitNewVocabulary"
+        width="600px"
+      >
+        <a-form layout="vertical">
+          <a-form-item label="单词">
+            <a-input v-model="newVocabulary.word" />
+          </a-form-item>
+          <a-form-item label="音标">
+            <a-input v-model="newVocabulary.phonetics[0].ipa" />
+          </a-form-item>
+          <a-form-item label="音标音频">
+            <a-input v-model="newVocabulary.phonetics[0].audio" />
+          </a-form-item>
+          <a-form-item label="词性">
+            <a-select v-model="newVocabulary.partOfSpeechList[0].type">
+              <a-select-option value="n.">n.名词</a-select-option>
+              <a-select-option value="v.">v.动词</a-select-option>
+              <a-select-option value="adj.">adj.形容词</a-select-option>
+              <a-select-option value="adv.">adv.副词</a-select-option>
+              <a-select-option value="conj.">conj.连词</a-select-option>
+              <a-select-option value="prep.">prep.介词</a-select-option>
+              <a-select-option value="pron.">pron.代词</a-select-option>
+              <a-select-option value="art.">art.冠词</a-select-option>
+              <a-select-option value="num.">num.数词</a-select-option>
+              <a-select-option value="aux.">aux.助动词</a-select-option>
+              <a-select-option value="part.">part.分词</a-select-option>
+              <a-select-option value="inf.">inf.不定式</a-select-option>
+              <a-select-option value="sub.">sub.从属连词</a-select-option>
+              <a-select-option value="ind.">ind.间接引语</a-select-option>
+              <a-select-option value="rel.">rel.关系代词</a-select-option>
+              <a-select-option value="dem.">dem.指示代词</a-select-option>
+              <a-select-option value="int.">int.疑问代词</a-select-option>
+              <a-select-option value="ord.">ord.序数词</a-select-option>
+              <a-select-option value="dis.">dis.分词</a-select-option>
+              <a-select-option value="loc.">loc.地点副词</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="近义词">
+            <a-input v-model="newVocabulary.synonyms[0]" />
+          </a-form-item>
+          <a-form-item label="反义词">
+            <a-input v-model="newVocabulary.antonyms[0]" />
+          </a-form-item>
+          <a-form-item label="释义">
+            <a-input v-model="newVocabulary.partOfSpeechList[0].definitions[0]" />
+          </a-form-item>
+          <a-form-item label="例句">
+            <a-input v-model="newVocabulary.partOfSpeechList[0].examples[0].sentence" />
+          </a-form-item>
+          <a-form-item label="例句释义">
+            <a-input v-model="newVocabulary.partOfSpeechList[0].examples[0].translation" />
+          </a-form-item>
+          <a-form-item label="标签">
+            <a-input v-model="newVocabulary.tags[0]" placeholder="多个标签可逗号分隔" />
+          </a-form-item>
+        </a-form>
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
-import { getwordbook, getcurrentwordbook, deletecurrentwordbook, addwordbook } from '@/api/manage'
+import { getwordbook, getcurrentwordbook, deletecurrentwordbook, addwordbook, deletevocabularies, addvocabularies } from '@/api/manage'
 
 export default {
   name: 'CardList',
@@ -246,7 +349,9 @@ export default {
       },
       currentWordBookid: null,
       currentWorddata: [],
+      changewordvocabulary: 0,
       createModalVisible: false,
+      addVocabularyModalVisible: false,
       newWordBook: {
         language: '',
         bookName: '',
@@ -254,14 +359,39 @@ export default {
         words: [
           {
             word: '',
-            phonetics: [''],
+            phonetics: [{
+              ipa: '',
+              audio: ''
+            }],
             synonyms: [''],
             antonyms: [''],
-            partOfSpeechList: [''],
+            partOfSpeechList: [{
+              type: '',
+              definitions: '',
+              examples: [{
+                  sentence: '',
+                  translation: ''
+                }]
+            }],
             tags: [''],
             difficulty: 1
           }
         ]
+      },
+      newVocabulary: {
+        word: '',
+        phonetics: [{ ipa: '', audio: '' }],
+        synonyms: [''],
+        antonyms: [''],
+        partOfSpeechList: [{ type: '',
+              definitions: [''],
+              examples: [{
+                  sentence: '',
+                  translation: ''
+                }]
+        }],
+        tags: [''],
+        difficulty: 1
       }
     }
   },
@@ -308,6 +438,8 @@ export default {
     // 查看词书并获取词书详情数据
     viewWordBook (scope) {
       this.currentWordBook = scope
+      this.currentWordBookid = scope.id
+      console.log('查看词书:', this.currentWordBook)
       this.viewModalVisible = true
 
       // 调用接口获取当前词书数据
@@ -325,6 +457,9 @@ export default {
     // 关闭弹窗
     closeViewModal () {
       this.viewModalVisible = false
+      console.log('test1', this.dataSource.filter(item => item.id === this.currentWordBook.id)[0].wordCount)
+      console.log('test2', this.currentWorddata.words.length)
+      this.dataSource.filter(item => item.id === this.currentWordBook.id)[0].wordCount = this.currentWorddata.words.length
       this.currentWordBook = null
       this.currentWorddata = [] // 清空当前词书数据
     },
@@ -334,7 +469,17 @@ export default {
       deletecurrentwordbook(scope.id)
       this.$message.success('词书已删除！')
     },
+    deletewordbookvocabularies (scope) {
+      // 调用接口获取当前词书数据
+      this.currentWorddata.words = this.currentWorddata.words.filter(item => item.id !== scope.id)
+      console.log(scope.id)
+      deletevocabularies(this.currentWordBookid, [`${scope.id}`])
+      this.$message.success('词汇已删除！')
+    },
     openCreateModal () {
+      this.createModalVisible = true
+    },
+    openCreatevocabulary () {
       this.createModalVisible = true
     },
     closeCreateModal () {
@@ -349,10 +494,20 @@ export default {
         words: [
           {
             word: '',
-            phonetics: [''],
+            phonetics: [{
+              ipa: '',
+              audio: ''
+            }],
             synonyms: [''],
             antonyms: [''],
-            partOfSpeechList: [''],
+            partOfSpeechList: [{
+              type: '',
+              definitions: [''],
+              examples: [{
+                  sentence: '',
+                  translation: ''
+                }]
+            }],
             tags: [''],
             difficulty: 1
           }
@@ -362,10 +517,20 @@ export default {
     addWord () {
       this.newWordBook.words.push({
         word: '',
-        phonetics: [''],
+        phonetics: [{
+              ipa: '',
+              audio: ''
+            }],
         synonyms: [''],
         antonyms: [''],
-        partOfSpeechList: [''],
+        partOfSpeechList: [{
+              type: '',
+              definitions: [''],
+              examples: [{
+                  sentence: '',
+                  translation: ''
+                }]
+            }],
         tags: [''],
         difficulty: 1
       })
@@ -386,6 +551,55 @@ export default {
         })
       this.$message.success('词书创建成功')
       this.closeCreateModal()
+    },
+    openAddVocabularyModal () {
+      this.addVocabularyModalVisible = true
+    },
+    closeAddVocabularyModal () {
+      this.addVocabularyModalVisible = false
+      this.resetNewVocabulary()
+    },
+    resetNewVocabulary () {
+      this.newVocabulary = {
+        word: '',
+        phonetics: [{ ipa: '', audio: '' }],
+        synonyms: [''],
+        antonyms: [''],
+        partOfSpeechList: [{ type: '',
+              definitions: [''],
+              examples: [{
+                  sentence: '',
+                  translation: ''
+                }]
+        }],
+        tags: [''],
+        difficulty: 1
+      }
+    },
+    submitNewVocabulary () {
+      console.log('提交的新词汇:', this.newVocabulary)
+      addvocabularies(this.currentWordBook.id, this.newVocabulary)
+        .then(res => {
+          console.log('添加词汇成功:', res)
+          this.fetchWordBookDetails(this.currentWordBook.id) // 刷新词书详情
+          this.$message.success('词汇添加成功')
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message.error('添加词汇失败')
+        })
+      this.closeAddVocabularyModal()
+    },
+    fetchWordBookDetails (id) {
+      getcurrentwordbook(id)
+        .then(res => {
+          this.currentWorddata = res
+          console.log('当前词书数据:', this.currentWorddata)
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message.error('获取当前词书数据失败')
+        })
     }
   }
 }

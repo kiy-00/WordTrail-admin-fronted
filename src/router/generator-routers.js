@@ -36,7 +36,7 @@ const constantRouterComponents = {
 
   // community
   CommunityList: () => import('@/views/community/CommunityList'),
-  CommunityDetail: () => import('@/views/community/CommunityDetail'),
+  UserList: () => import('@/views/community/UserList'),
   // result
   ResultSuccess: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
   ResultFail: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),

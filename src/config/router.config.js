@@ -80,9 +80,9 @@ export const asyncRouterMap = [
             meta: { title: 'community.list', keepAlive: true, permission: ['table'] }
           },
           {
-            path: '/community/detail',
-            name: 'CommunityDetail',
-            component: () => import('@/views/community/CommunityDetail'),
+            path: '/community/userlist',
+            name: 'UserList',
+            component: () => import('@/views/community/UserList'),
             meta: { title: 'community.detail', keepAlive: true, permission: ['table'] }
           }
         ]

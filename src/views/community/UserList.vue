@@ -1,38 +1,38 @@
 <template>
-<page-header-wrapper content="可以查看所有的帖子">
+  <page-header-wrapper content="可以查看所有的帖子">
     <template v-slot:extraContent>
-    <div style="width: 155px; margin-top: -20px;">
+      <div style="width: 155px; margin-top: -20px;">
         <img style="width: 100%" :src="extraImage" />
-    </div>
+      </div>
     </template>
     <a-card
-    style="margin-top: 24px"
-    :bordered="false"
-    title="标准列表"
+      style="margin-top: 24px"
+      :bordered="false"
+      title="标准列表"
     >
-    <div slot="extra">
+      <div slot="extra">
         <a-radio-group v-model="status">
-        <a-radio-button value="all">全部</a-radio-button>
-        <a-radio-button value="normal" @click="searchnormal">正常</a-radio-button>
-        <a-radio-button value="reported" @click="searchreported">被举报</a-radio-button>
-        <a-radio-button value="deleted" @click="searchdeleted">已处理：不可见</a-radio-button>
-        <a-radio-button value="resolved" @click="searchresolved">已处理：可见</a-radio-button>
+          <a-radio-button value="all">全部</a-radio-button>
+          <a-radio-button value="normal" @click="searchnormal">正常</a-radio-button>
+          <a-radio-button value="reported" @click="searchreported">被举报</a-radio-button>
+          <a-radio-button value="deleted" @click="searchdeleted">已处理：不可见</a-radio-button>
+          <a-radio-button value="resolved" @click="searchresolved">已处理：可见</a-radio-button>
         </a-radio-group>
         <a-select v-model="searchKind" style="width: 100px;">
-        <a-select-option value="post">帖子名称</a-select-option>
-        <a-select-option value="username">用户名</a-select-option>
-        <a-select-option value="userid">帖子ID</a-select-option>
+          <a-select-option value="post">帖子名称</a-select-option>
+          <a-select-option value="username">用户名</a-select-option>
+          <a-select-option value="userid">帖子ID</a-select-option>
         </a-select>
         <a-input-search
-        v-model="searchKeyword"
-        style="margin-left: 16px; width: 272px;"
-        :placeholder="getPlaceholder"
-        @search="handleSearch"
+          v-model="searchKeyword"
+          style="margin-left: 16px; width: 272px;"
+          :placeholder="getPlaceholder"
+          @search="handleSearch"
         />
-    </div>
+      </div>
 
-    <!-- 表格展示帖子数据 -->
-    <a-table
+      <!-- 表格展示帖子数据 -->
+      <a-table
         :dataSource="dataSource"
         :pagination="searchKind === 'post' ? false : { pageSize: pageSize }"
         rowKey="id"
@@ -40,20 +40,20 @@
         style="margin-top: 10px;"
         :scroll="{ x: '100%' }"
         :columns="columns"
-    >
-    </a-table>
+      >
+      </a-table>
 
-    <!-- 分页组件 -->
-    <a-pagination
+      <!-- 分页组件 -->
+      <a-pagination
         v-if="status === 'all'"
         style="margin-top: 16px; text-align: right;"
         :current="currentPage"
         :total="allcount"
         :pageSize="pageSize"
         @change="handlePageChange"
-    />
+      />
     </a-card>
-</page-header-wrapper>
+  </page-header-wrapper>
 </template>
 
 <script>

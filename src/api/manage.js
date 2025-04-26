@@ -10,13 +10,13 @@ const api = {
   uploadavatar: 'http://localhost:8080/account/UploadAvatar',
   getwordbook: 'http://localhost:8080/api/wordbooks',
   addwordbook: 'http://localhost:8080/api/wordbooks/addWordbook',
-  getpostcount: 'http://localhost:8080/api/admin/getpostcount',
-  deletepost: 'http://localhost:8080/api/admin/deletepost',
-  searchposttitle: 'http://localhost:8080/api/admin/searchposttitle',
-  searchpostusername: 'http://localhost:8080/api/admin/searchpostusername',
-  searchpostuserid: 'http://localhost:8080/api/admin/searchpostuserId',
-  searchpoststate: 'http://localhost:8080/api/admin/searchpoststate',
-  getuserscount: 'http://localhost:8080/api/admin/getuserscount'
+  getpostcount: 'http://localhost:8080/admin/getpostcount',
+  deletepost: 'http://localhost:8080/admin/deletepost',
+  searchposttitle: 'http://localhost:8080/admin/searchposttitle',
+  searchpostusername: 'http://localhost:8080/admin/searchpostusername',
+  searchpostuserid: 'http://localhost:8080/admin/searchpostuserId',
+  searchpoststate: 'http://localhost:8080/admin/searchpoststate',
+  getuserscount: 'http://localhost:8080/admin/getuserscount'
 }
 
 export default api
@@ -142,7 +142,7 @@ export function getpostcount () {
 
 export function getpost (id) {
   return request({
-    url: `http://localhost:8080/api/getpost/${id}`,
+    url: `http://localhost:8080/admin/getpost/${id}`,
     method: 'get'
   })
 }

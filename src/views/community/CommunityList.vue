@@ -34,18 +34,16 @@
       <!-- 表格展示帖子数据 -->
       <a-table
         :dataSource="dataSource"
-        :pagination="searchKind === 'post' ? false : { pageSize: pageSize }"
+        :pagination="false"
         rowKey="id"
         bordered
         style="margin-top: 10px;"
         :scroll="{ x: '100%' }"
         :columns="columns"
-      >
-      </a-table>
+      />
 
       <!-- 分页组件 -->
       <a-pagination
-        v-if="status === 'all'"
         style="margin-top: 16px; text-align: right;"
         :current="currentPage"
         :total="allcount"
@@ -72,8 +70,8 @@ const columns = [
   },
   {
     title: '帖子更新时间',
-    dataIndex: 'updateTime',
-    key: 'updateTime'
+    dataIndex: 'updatedTime',
+    key: 'updatedTime'
   },
   {
     title: '帖子创建时间',
@@ -87,8 +85,8 @@ const columns = [
   },
   {
     title: '帖子发布用户名',
-    dataIndex: 'username',
-    key: 'username'
+    dataIndex: 'author',
+    key: 'author'
   },
   {
     title: '帖子状态',
@@ -97,8 +95,8 @@ const columns = [
   },
   {
     title: '帖子评论数',
-    dataIndex: 'ContentCount',
-    key: 'ContentCount'
+    dataIndex: 'commentCount',
+    key: 'commentCount'
   },
   {
     title: '帖子点赞数',
@@ -115,7 +113,7 @@ export default {
     extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
     dataSource: [],
     currentPage: 1, // 当前页码
-    pageSize: 10, // 每页显示的条数
+    pageSize: 1, // 每页显示的条数
     allcount: 0, // 总条数
     reportedcount: 0, // 被举报的帖子数
     deletedcount: 0, // 已处理的帖子数
@@ -129,8 +127,12 @@ export default {
 },
   mounted () {
     // 获取词书数据
-    this.Getpostcount().then(res => {
-      this.allcount = res.data.count
+    this.Getpostcount().then(() => {
+      console.log('显示', this.allcount)
+      this.Getpost(this.currentPage)
+    })
+    .catch((err) => {
+      console.error('Getpostcount 异常:', err)
     })
   },
   computed: {
@@ -142,12 +144,14 @@ export default {
   // 获取总帖子数
   Getpostcount () {
     return getpostcount().then(res => {
-      this.allcount = res.data.count
+      console.log('allcount:', res.data[0].count)
+      this.allcount = res.data[0].count
     })
   },
   // 获取指定页码的帖子数据
   Getpost (page) {
-    return getpost(page).then(res => {
+    getpost(page).then(res => {
+      console.log('获取帖子数据:', res)
       this.dataSource = res.data
     })
   },
@@ -155,7 +159,7 @@ export default {
   // 处理页码变化
   handlePageChange (page) {
     this.currentPage = page
-    this.getpost(page) // 获取对应页码的数据
+    this.Getpost(page) // 获取对应页码的数据
   },
 
   // 搜索功能

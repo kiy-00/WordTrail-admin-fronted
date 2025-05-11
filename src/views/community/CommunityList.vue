@@ -42,14 +42,40 @@
         :columns="columns"
       />
 
-      <!-- 分页组件 -->
-      <a-pagination
-        style="margin-top: 16px; text-align: right;"
-        :current="currentPage"
-        :total="allcount"
-        :pageSize="pageSize"
-        @change="handlePageChange"
-      />
+      <!-- 自定义分页放在表格下面 -->
+      <div style="margin-top: 16px; text-align: right; display: flex; justify-content: flex-end; align-items: center;">
+        <!-- 跳转到第一页 -->
+        <a-button @click="goToFirstPage" :disabled="currentPage === 1" style="margin-right: 8px;">
+          第一页
+        </a-button>
+
+        <!-- 跳转到上一页 -->
+        <a-button @click="goToPreviousPage" :disabled="currentPage === 1" style="margin-right: 8px;">
+          上一页
+        </a-button>
+
+        <!-- 当前页码输入框 -->
+        <span>
+          <a-input-number
+            v-model="currentPage"
+            :min="1"
+            :max="totalPages"
+            @change="handlePageInputChange"
+            style="width: 60px; margin-right: 8px;"
+          />
+          / {{ totalPages }}
+        </span>
+
+        <!-- 跳转到下一页 -->
+        <a-button @click="goToNextPage" :disabled="currentPage === totalPages" style="margin-right: 8px;">
+          下一页
+        </a-button>
+
+        <!-- 跳转到最后一页 -->
+        <a-button @click="goToLastPage" :disabled="currentPage === totalPages">
+          最后一页
+        </a-button>
+      </div>
     </a-card>
   </page-header-wrapper>
 </template>
@@ -108,86 +134,118 @@ const columns = [
 export default {
   name: 'CommunityList',
   data () {
-  return {
-    status: 'all',
-    extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-    dataSource: [],
-    currentPage: 1, // 当前页码
-    pageSize: 1, // 每页显示的条数
-    allcount: 0, // 总条数
-    reportedcount: 0, // 被举报的帖子数
-    deletedcount: 0, // 已处理的帖子数
-    resolvedcount: 0, // 可见的帖子数
-    searchKind: 'post', // 搜索类型
-    normalcount: 0, // 正常的帖子数
-    searchKeyword: '', // 搜索关键字
-    searchData: [], // 搜索结果数据
-    columns
-  }
-},
+    return {
+      status: 'all',
+      extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
+      dataSource: [],
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页显示的条数
+      allcount: 0, // 总条数
+      totalPages: 0, // 总页数
+      searchKind: 'post', // 搜索类型
+      searchKeyword: '', // 搜索关键字
+      searchData: [], // 搜索结果数据
+      columns
+    }
+  },
   mounted () {
-    // 获取词书数据
+    // 获取总帖子数并计算总页数
     this.Getpostcount().then(() => {
-      console.log('显示', this.allcount)
+      this.totalPages = Math.ceil(this.allcount / this.pageSize)
       this.Getpost(this.currentPage)
-    })
-    .catch((err) => {
-      console.error('Getpostcount 异常:', err)
     })
   },
   computed: {
-      getPlaceholder () {
-        return this.searchKind === 'post' ? '请输入帖子名称' : this.searchKind === 'username' ? '请输入用户名' : '请输入帖子ID'
+    getPlaceholder () {
+      return this.searchKind === 'post' ? '请输入帖子名称' : this.searchKind === 'username' ? '请输入用户名' : '请输入帖子ID'
     }
   },
   methods: {
-  // 获取总帖子数
-  Getpostcount () {
-    return getpostcount().then(res => {
-      console.log('allcount:', res.data[0].count)
-      this.allcount = res.data[0].count
-    })
-  },
-  // 获取指定页码的帖子数据
-  Getpost (page) {
-    getpost(page).then(res => {
-      console.log('获取帖子数据:', res)
-      this.dataSource = res.data
-    })
-  },
+    // 获取总帖子数
+    Getpostcount () {
+      return getpostcount().then(res => {
+        this.allcount = res.data[0].count
+      })
+    },
 
-  // 处理页码变化
-  handlePageChange (page) {
-    this.currentPage = page
-    this.Getpost(page) // 获取对应页码的数据
-  },
-
-  // 搜索功能
-  handleSearch () {
-    // 根据搜索关键字过滤数据
-    if (this.searchKind === 'post') {
-      getsearchposttitle(this.searchKeyword).then(res => {
+    // 获取指定页码的帖子数据
+    Getpost (page) {
+      const offset = (page - 1) * this.pageSize // 计算偏移量
+      getpost({ offset, limit: this.pageSize }).then(res => {
         this.dataSource = res.data
       })
-    } else if (this.searchKind === 'username') {
-      getsearchpostusername(this.searchKeyword).then(res => {
-        this.dataSource = res.data.filter(item => item.username.includes(this.searchKeyword))
-      })
-    } else if (this.searchKind === 'userid') {
-      getsearchpostuserId(this.searchKeyword).then(res => {
-        this.dataSource = res.data.filter(item => item.id === this.searchKeyword)
-      })
-    }
-  },
+    },
 
-  // 搜索正常状态的帖子
-  searchnormal () {
-    this.status = 'normal'
-    getsearchpoststate(this.status).then(res => {
-      this.dataSource = res.data
-    })
+    // 处理页码变化
+    handlePageChange (page) {
+      this.currentPage = page
+      this.Getpost(page) // 获取对应页码的数据
+    },
+
+    // 搜索功能
+    handleSearch () {
+      // 根据搜索关键字过滤数据
+      if (this.searchKind === 'post') {
+        getsearchposttitle(this.searchKeyword).then(res => {
+          this.dataSource = res.data
+        })
+      } else if (this.searchKind === 'username') {
+        getsearchpostusername(this.searchKeyword).then(res => {
+          this.dataSource = res.data.filter(item => item.username.includes(this.searchKeyword))
+        })
+      } else if (this.searchKind === 'userid') {
+        getsearchpostuserId(this.searchKeyword).then(res => {
+          this.dataSource = res.data.filter(item => item.id === this.searchKeyword)
+        })
+      }
+    },
+
+    // 搜索正常状态的帖子
+    searchnormal () {
+      this.status = 'normal'
+      getsearchpoststate(this.status).then(res => {
+        this.dataSource = res.data
+      })
+    },
+
+    // 跳转到第一页
+    goToFirstPage () {
+      this.currentPage = 1
+      this.Getpost(this.currentPage)
+    },
+
+    // 跳转到上一页
+    goToPreviousPage () {
+      if (this.currentPage > 1) {
+        this.currentPage -= 1
+        this.Getpost(this.currentPage)
+      }
+    },
+
+    // 跳转到下一页
+    goToNextPage () {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage += 1
+        this.Getpost(this.currentPage)
+      }
+    },
+
+    // 跳转到最后一页
+    goToLastPage () {
+      this.currentPage = this.totalPages
+      this.Getpost(this.currentPage)
+    },
+
+    // 处理页码输入框变化
+    handlePageInputChange (page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page
+        this.Getpost(this.currentPage)
+      } else {
+        this.$message.error('请输入有效的页码')
+      }
+    }
   }
-}
 }
 </script>
 

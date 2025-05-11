@@ -87,8 +87,8 @@ const columns = [
 },
 {
     title: '帖子发布用户名',
-    dataIndex: 'username',
-    key: 'username'
+    dataIndex: 'author',
+    key: 'author'
 },
 {
     title: '帖子状态',
@@ -148,7 +148,7 @@ Getpostcount () {
 // 获取指定页码的帖子数据
 Getpost (page) {
     return getpost(page).then(res => {
-    this.dataSource = res.data
+        this.dataSource = res.data
     })
 },
 

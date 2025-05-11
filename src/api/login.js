@@ -2,10 +2,10 @@ import request from '@/utils/request'
 
 const userApi = {
   // Login: '/auth/login',
-  Login: 'http://localhost:8080/api/users/login/account',
-  LoginbyEmail: 'http://localhost:8080/api/users/login/email',
+  Login: 'http://localhost:8082/api/users/login/account',
+  LoginbyEmail: 'http://localhost:8082/api/users/login/email',
   Logout: '/auth/logout',
-  recover: 'http://localhost:8080/api/users/login/recover',
+  recover: 'http://localhost:8082/api/users/login/recover',
   SendSmsErr: '/account/sms_err',
   // get my info
   UserInfo: '/user/info',

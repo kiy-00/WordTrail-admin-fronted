@@ -7,16 +7,16 @@ const api = {
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
   orgTree: '/org/tree',
-  uploadavatar: 'http://localhost:8080/account/UploadAvatar',
-  getwordbook: 'http://localhost:8080/api/wordbooks',
-  addwordbook: 'http://localhost:8080/api/wordbooks/addWordbook',
-  getpostcount: 'http://localhost:8080/admin/getpostcount',
-  deletepost: 'http://localhost:8080/admin/deletepost',
-  searchposttitle: 'http://localhost:8080/admin/searchposttitle',
-  searchpostusername: 'http://localhost:8080/admin/searchpostusername',
-  searchpostuserid: 'http://localhost:8080/admin/searchpostuserId',
-  searchpoststate: 'http://localhost:8080/admin/searchpoststate',
-  getuserscount: 'http://localhost:8080/admin/getuserscount'
+  uploadavatar: 'http://localhost:8082/account/UploadAvatar',
+  getwordbook: 'http://localhost:8082/api/wordbooks',
+  addwordbook: 'http://localhost:8082/api/wordbooks/addWordbook',
+  getpostcount: 'http://localhost:8082/admin/getpostcount',
+  deletepost: 'http://localhost:8082/admin/deletepost',
+  searchposttitle: 'http://localhost:8082/admin/searchposttitle',
+  searchpostusername: 'http://localhost:8082/admin/searchpostusername',
+  searchpostuserid: 'http://localhost:8082/admin/searchpostuserId',
+  searchpoststate: 'http://localhost:8082/admin/searchpoststate',
+  getuserscount: 'http://localhost:8082/admin/getuserscount'
 }
 
 export default api
@@ -38,19 +38,19 @@ export function getwordbook () {
 
 export function getcurrentwordbook (wordbook) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${wordbook}`,
+    url: `http://localhost:8082/api/wordbooks/${wordbook}`,
     method: 'get'
   })
 }
 export function deletecurrentwordbook (wordbook) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${wordbook}`,
+    url: `http://localhost:8082/api/wordbooks/${wordbook}`,
     method: 'delete'
   })
 }
 export function deletevocabularies (wordbook, wordIds) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${wordbook}/vocabularies`,
+    url: `http://localhost:8082/api/wordbooks/${wordbook}/vocabularies`,
     method: 'delete',
     data: {
       wordIds // 这里就是关键，把第二个参数赋值给 wordIds 字段！
@@ -59,7 +59,7 @@ export function deletevocabularies (wordbook, wordIds) {
 }
 export function addvocabularies (wordbook, parameter) {
   return request({
-    url: `http://localhost:8080/api/wordbooks/${wordbook}/vocabularies`,
+    url: `http://localhost:8082/api/wordbooks/${wordbook}/vocabularies`,
     method: 'post',
     data: parameter
   })
@@ -142,7 +142,7 @@ export function getpostcount () {
 
 export function getpost (id) {
   return request({
-    url: `http://localhost:8080/admin/getpost/${id}`,
+    url: `http://localhost:8082/admin/getpost/${id}`,
     method: 'get'
   })
 }
@@ -200,7 +200,7 @@ export function getsearchpoststate (state) {
 
 export function postsetstate (id, state) {
   return request({
-    url: `http://localhost:8080/api/admin/setstate/${id}`,
+    url: `http://localhost:8082/api/admin/setstate/${id}`,
     method: 'post',
     data: {
       state
@@ -210,14 +210,14 @@ export function postsetstate (id, state) {
 
 export function getpostsid (id) {
   return request({
-    url: `http://localhost:8080/api/admin/posts/${id}`,
+    url: `http://localhost:8082/api/admin/posts/${id}`,
     method: 'post'
   })
 }
 
 export function deletepostidcomment (id, commentId, message) {
   return request({
-    url: `http://localhost:8080/api/admin/posts/${id}`,
+    url: `http://localhost:8082/api/admin/posts/${id}`,
     method: 'post',
     data: {
       commentId,
@@ -235,14 +235,14 @@ export function getuserscount () {
 
 export function getuser (id) {
   return request({
-    url: `http://localhost:8080/api/admin/getuser/${id}`,
+    url: `http://localhost:8082/api/admin/getuser/${id}`,
     method: 'get'
   })
 }
 
 export function postusersetstate (id, state, message) {
   return request({
-    url: `http://localhost:8080/api/admin/users/${id}/setstate`,
+    url: `http://localhost:8082/api/admin/users/${id}/setstate`,
     method: 'post',
     data: {
       state,

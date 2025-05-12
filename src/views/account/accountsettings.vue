@@ -74,7 +74,7 @@ export default {
     return {
       // cropper
       showname: `${storage.get(SHOW_NAME)}`,
-      avatarUrl: `/${storage.get(SHOW_AVATAR)}`,
+      avatarUrl: `${storage.get(SHOW_AVATAR)}`,
       changekey: ``,
       changepassword: ``,
       preview: {},
@@ -122,9 +122,15 @@ export default {
         uploadavatar(formData)
           .then(res => {
             console.log('上传成功:', res)
-            this.avatarUrl = `/${res.data.avatarUrl}` // 更新头像 URL
+            this.avatarUrl = `${res.data.avatarUrl}` // 更新头像 URL
             storage.set(SHOW_AVATAR, res.data.avatarUrl) // 存储到本地
             this.$message.success('头像上传成功！')
+            const evt = new StorageEvent('storage', {
+              key: SHOW_AVATAR,
+              newValue: res.data.avatarUrl
+            })
+            window.dispatchEvent(evt)
+            console.log(evt)
           })
           .catch(err => {
             console.error('上传失败:', err)

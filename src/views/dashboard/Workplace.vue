@@ -209,7 +209,7 @@ export default {
     currentUser () {
       return {
         name: 'Serati Ma',
-        avatar: `/${storage.get(SHOW_AVATAR)}`
+        avatar: `${storage.get(SHOW_AVATAR)}`
       }
     },
     userInfo () {

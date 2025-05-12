@@ -1,6 +1,6 @@
 <template>
   <div :class="wrpCls">
-    <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
+    <avatar-dropdown :menu="showMenu" :current-user="this.currentUser" :class="prefixCls" />
     <select-lang :class="prefixCls" />
   </div>
 </template>
@@ -38,10 +38,14 @@ export default {
   data () {
     return {
       showMenu: true,
-      currentUser: {}
+      updateKey: 0
     }
   },
   computed: {
+      currentUser () {
+        console.log(this.updateKey)
+        return { name: `管理员：${storage.get(SHOW_NAME)}`, avatar: `${storage.get(SHOW_AVATAR)}` }
+      },
     wrpCls () {
       return {
         'ant-pro-global-header-index-right': true,
@@ -50,9 +54,16 @@ export default {
     }
   },
   mounted () {
-    this.currentUser = {
-      name: `管理员：${storage.get(SHOW_NAME)}`,
-      avatar: `/${storage.get(SHOW_AVATAR)}`
+    window.addEventListener('storage', this.onStorageChange)
+  },
+  beforeDestroy () {
+    window.removeEventListener('storage', this.onStorageChange)
+  },
+  methods: {
+    onStorageChange (e) {
+      if (e.key === SHOW_AVATAR) {
+        this.updateKey += 1
+      }
     }
   }
 }

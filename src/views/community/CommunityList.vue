@@ -11,17 +11,13 @@
       title="标准列表"
     >
       <div slot="extra">
-        <a-radio-group v-model="status">
-          <a-radio-button value="all">全部</a-radio-button>
-          <a-radio-button value="normal" @click="searchnormal">正常</a-radio-button>
-          <a-radio-button value="reported" @click="searchreported">被举报</a-radio-button>
-          <a-radio-button value="deleted" @click="searchdeleted">已处理：不可见</a-radio-button>
-          <a-radio-button value="resolved" @click="searchresolved">已处理：可见</a-radio-button>
-        </a-radio-group>
+        <a-button @click="searchnormal">正常</a-button>
+        <a-button @click="searchreported">被举报</a-button>
+        <a-button @click="searchdeleted">已处理：不可见</a-button>
+        <a-button @click="searchresolved">已处理：可见</a-button>
         <a-select v-model="searchKind" style="width: 100px;">
           <a-select-option value="post">帖子名称</a-select-option>
-          <a-select-option value="username">用户名</a-select-option>
-          <a-select-option value="userid">帖子ID</a-select-option>
+          <a-select-option value="userId">用户Id</a-select-option>
         </a-select>
         <a-input-search
           v-model="searchKeyword"
@@ -39,9 +35,23 @@
         bordered
         style="margin-top: 10px;"
         :scroll="{ x: '100%' }"
-        :columns="columns"
-      />
-
+      >
+        <a-table-column
+          v-for="column in columns"
+          :key="column.key"
+          :title="column.title"
+          :dataIndex="column.dataIndex"
+        />
+        <!-- 添加“操作”列 -->
+        <a-table-column title="操作" key="actions" width="10%">
+          <template #default="scope">
+            <!-- 帖子列表的操作按钮 -->
+            <a @click="openReportModal(scope)">删除帖子</a>
+            <p></p>
+            <a @click="openReportStateModal(scope)">更改状态</a>
+          </template>
+        </a-table-column>
+      </a-table>
       <!-- 自定义分页放在表格下面 -->
       <div style="margin-top: 16px; text-align: right; display: flex; justify-content: flex-end; align-items: center;">
         <!-- 跳转到第一页 -->
@@ -77,11 +87,91 @@
         </a-button>
       </div>
     </a-card>
+    <div>
+
+      <!-- 自定义删除弹窗 -->
+      <a-modal
+        :visible="reportModalVisible"
+        title="确认删除帖子"
+        @ok="handleReportOk"
+        @cancel="handleReportCancel"
+        okText="确认"
+        cancelText="取消"
+      >
+        <p>是否删除帖子 "{{ currentPost?.title }}"？</p>
+        <a-textarea
+          v-model="reportReason"
+          placeholder="请输入删除原因"
+          :autoSize="{ minRows: 3, maxRows: 5 }"
+        />
+      </a-modal>
+      <!-- 自定义更改状态弹窗 -->
+      <a-modal
+        :visible="reportstateModalVisible"
+        title="确认更改状态"
+        @ok="handleReportStateOk"
+        @cancel="handleReportStateCancel"
+        okText="确认"
+        cancelText="取消"
+      >
+        <p>是否更改状态 "{{ currentPost?.title }}"？</p>
+        <p>当前状态 "{{ currentPost?.state }}"</p>
+        <a-form-item label="状态">
+          <a-select v-model="currentstate" style="width: 100%">
+            <a-select-option value="normal">正常</a-select-option>
+            <a-select-option value="reported">被举报</a-select-option>
+            <a-select-option value="resolved">已处理：可见</a-select-option>
+            <a-select-option value="deleted">已处理：不可见</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-modal>
+      <!-- 自定义搜索弹窗 -->
+      <a-modal
+        :visible="reportsearchModalVisible"
+        title="搜索"
+        @cancel="handleReportSearchCancel"
+        :width="'80vw'"
+        :footer="null"
+      >
+        <!-- 表格展示帖子数据 -->
+        <a-table
+          :dataSource="searchData"
+          :pagination="false"
+          rowKey="id"
+          bordered
+          style="margin-top: 10px;"
+          :scroll="{ x: '100%' }"
+        >
+          <a-table-column
+            v-for="column in columns"
+            :key="column.key"
+            :title="column.title"
+            :dataIndex="column.dataIndex"
+          />
+          <!-- 添加“操作”列 -->
+          <a-table-column title="操作" key="actions" width="10%">
+            <template #default="scope">
+              <!-- 帖子列表的操作按钮 -->
+              <a @click="openReportModal(scope)">删除帖子</a>
+              <p></p>
+              <a @click="openReportStateModal(scope)">更改状态</a>
+            </template>
+          </a-table-column>
+        </a-table>
+      </a-modal>
+    </div>
   </page-header-wrapper>
 </template>
 
 <script>
-import { getsearchpoststate, getpostcount, getpost, getsearchposttitle, getsearchpostusername, getsearchpostuserId } from '@/api/manage'
+import { getsearchpoststate,
+  getpostcount,
+  getpost,
+  getsearchposttitle,
+  getsearchpostuserId,
+  deletepost,
+  postsetstate
+ } from '@/api/manage'
 
 const columns = [
   {
@@ -105,19 +195,24 @@ const columns = [
     key: 'createdTime'
   },
   {
-    title: '帖子发布用户Id',
-    dataIndex: 'userid',
-    key: 'userid'
+    title: '帖子内容',
+    dataIndex: 'content',
+    key: 'content'
   },
   {
     title: '帖子发布用户名',
-    dataIndex: 'author',
-    key: 'author'
+    dataIndex: 'username',
+    key: 'username'
+  },
+  {
+    title: '帖子发布用户Id',
+    dataIndex: 'userId',
+    key: 'userId'
   },
   {
     title: '帖子状态',
-    dataIndex: 'status',
-    key: 'status'
+    dataIndex: 'state',
+    key: 'state'
   },
   {
     title: '帖子评论数',
@@ -135,7 +230,7 @@ export default {
   name: 'CommunityList',
   data () {
     return {
-      status: 'all',
+      state: 'all',
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
       dataSource: [],
       currentPage: 1, // 当前页码
@@ -145,6 +240,14 @@ export default {
       searchKind: 'post', // 搜索类型
       searchKeyword: '', // 搜索关键字
       searchData: [], // 搜索结果数据
+      nowchoice: 'all', // 当前选择的状态
+      reportModalVisible: false,
+      reportReason: '',
+      reportstateModalVisible: false,
+      currentstate: 'normal', // 当前选择的状态
+      currentPost: null, // 被举报的帖子对象
+      loading: false,
+      reportsearchModalVisible: false,
       columns
     }
   },
@@ -152,12 +255,13 @@ export default {
     // 获取总帖子数并计算总页数
     this.Getpostcount().then(() => {
       this.totalPages = Math.ceil(this.allcount / this.pageSize)
+      console.log(this.totalPages)
       this.Getpost(this.currentPage)
     })
   },
   computed: {
     getPlaceholder () {
-      return this.searchKind === 'post' ? '请输入帖子名称' : this.searchKind === 'username' ? '请输入用户名' : '请输入帖子ID'
+      return this.searchKind === 'post' ? '请输入帖子名称' : '请输入用户ID'
     }
   },
   methods: {
@@ -170,8 +274,7 @@ export default {
 
     // 获取指定页码的帖子数据
     Getpost (page) {
-      const offset = (page - 1) * this.pageSize // 计算偏移量
-      getpost({ offset, limit: this.pageSize }).then(res => {
+      getpost(page).then(res => {
         this.dataSource = res.data
       })
     },
@@ -187,24 +290,47 @@ export default {
       // 根据搜索关键字过滤数据
       if (this.searchKind === 'post') {
         getsearchposttitle(this.searchKeyword).then(res => {
-          this.dataSource = res.data
+          this.reportsearchModalVisible = true
+          this.searchData = res.data
         })
-      } else if (this.searchKind === 'username') {
-        getsearchpostusername(this.searchKeyword).then(res => {
-          this.dataSource = res.data.filter(item => item.username.includes(this.searchKeyword))
-        })
-      } else if (this.searchKind === 'userid') {
+      } else if (this.searchKind === 'userId') {
         getsearchpostuserId(this.searchKeyword).then(res => {
-          this.dataSource = res.data.filter(item => item.id === this.searchKeyword)
+          this.reportsearchModalVisible = true
+          this.searchData = res.data
         })
       }
     },
 
     // 搜索正常状态的帖子
     searchnormal () {
-      this.status = 'normal'
-      getsearchpoststate(this.status).then(res => {
-        this.dataSource = res.data
+      this.state = 'normal'
+      getsearchpoststate(this.state).then(res => {
+        this.searchData = res.data
+        this.reportsearchModalVisible = true
+      })
+    },
+    // 搜索被举报的帖子
+    searchreported () {
+      this.state = 'reported'
+      getsearchpoststate(this.state).then(res => {
+        this.searchData = res.data
+        this.reportsearchModalVisible = true
+      })
+    },
+    // 搜索已处理的帖子
+    searchdeleted () {
+      this.state = 'deleted'
+      getsearchpoststate(this.state).then(res => {
+        this.searchData = res.data
+        this.reportsearchModalVisible = true
+      })
+    },
+    // 搜索已处理的帖子
+    searchresolved () {
+      this.state = 'resolved'
+      getsearchpoststate(this.state).then(res => {
+        this.searchData = res.data
+        this.reportsearchModalVisible = true
       })
     },
 
@@ -244,6 +370,52 @@ export default {
       } else {
         this.$message.error('请输入有效的页码')
       }
+    },
+    openReportModal (scope) {
+      this.currentPost = scope
+      this.reportReason = ''
+      this.reportModalVisible = true
+    },
+    openReportStateModal (scope) {
+      this.currentPost = scope
+      this.currentstate = scope.state
+      this.reportstateModalVisible = true
+    },
+    handleReportOk () {
+      if (!this.reportReason.trim()) {
+        this.$message.warning('请填写删除原因')
+        return
+      }
+      deletepost(this.currentPost.id, this.reportReason).then(res => {
+        this.$message.success('删除成功')
+        this.reportModalVisible = false
+        this.Getpost(this.currentPage) // 刷新帖子列表
+      }).catch(err => {
+        console.error('删除失败:', err)
+        this.$message.error('删除失败，请稍后再试')
+      })
+    },
+    handleReportStateOk () {
+      postsetstate(this.currentPost.id, this.currentstate).then(res => {
+        this.$message.success('更改成功')
+        this.reportstateModalVisible = false
+        this.Getpost(this.currentPage) // 刷新帖子列表
+      }).catch(err => {
+        console.error('更改失败:', err)
+        this.$message.error('更改失败，请稍后再试')
+      })
+    },
+    handleReportCancel () {
+      console.log('取消删除')
+      this.reportstateModalVisible = false
+    },
+    handleReportStateCancel () {
+      console.log('取消删除')
+      this.reportstateModalVisible = false
+    },
+    handleReportSearchCancel () {
+      console.log('取消查询')
+      this.reportsearchModalVisible = false
     }
   }
 }

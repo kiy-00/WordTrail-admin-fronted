@@ -162,7 +162,7 @@ export function getsearchposttitle (keyword) {
   return request({
     url: api.searchposttitle,
     method: 'get',
-    data: {
+    params: {
       keyword
     }
   })
@@ -180,9 +180,9 @@ export function getsearchpostusername (username) {
 
 export function getsearchpostuserId (userId) {
   return request({
-    url: api.searchpostuserId,
+    url: api.searchpostuserid,
     method: 'get',
-    data: {
+    params: {
       userId
     }
   })
@@ -192,7 +192,7 @@ export function getsearchpoststate (state) {
   return request({
     url: api.searchpoststate,
     method: 'get',
-    data: {
+    params: {
       state
     }
   })
@@ -200,7 +200,7 @@ export function getsearchpoststate (state) {
 
 export function postsetstate (id, state) {
   return request({
-    url: `http://localhost:8082/api/admin/setstate/${id}`,
+    url: `http://localhost:8082/admin/setstate/${id}`,
     method: 'post',
     data: {
       state

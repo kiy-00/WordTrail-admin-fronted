@@ -210,14 +210,14 @@ export function postsetstate (id, state) {
 
 export function getpostsid (id) {
   return request({
-    url: `http://localhost:8082/api/admin/posts/${id}`,
-    method: 'post'
+    url: `http://localhost:8082/admin/posts/${id}`,
+    method: 'get'
   })
 }
 
 export function deletepostidcomment (id, commentId, message) {
   return request({
-    url: `http://localhost:8082/api/admin/posts/${id}`,
+    url: `http://localhost:8082/admin/posts/${id}`,
     method: 'post',
     data: {
       commentId,
@@ -235,14 +235,14 @@ export function getuserscount () {
 
 export function getuser (id) {
   return request({
-    url: `http://localhost:8082/api/admin/getuser/${id}`,
+    url: `http://localhost:8082/admin/getuser/${id}`,
     method: 'get'
   })
 }
 
 export function postusersetstate (id, state, message) {
   return request({
-    url: `http://localhost:8082/api/admin/users/${id}/setstate`,
+    url: `http://localhost:8082/admin/users/${id}/setstate`,
     method: 'post',
     data: {
       state,

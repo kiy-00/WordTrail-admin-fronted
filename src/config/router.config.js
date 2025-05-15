@@ -96,16 +96,11 @@ export const asyncRouterMap = [
         meta: { title: 'menu.profile', icon: 'profile', permission: ['profile'] },
         children: [
           {
-            path: '/profile/basic',
+            path: '/profile/basic/:id',
             name: 'ProfileBasic',
             component: () => import('@/views/profile/basic'),
-            meta: { title: 'menu.profile.basic', permission: ['profile'] }
-          },
-          {
-            path: '/profile/advanced',
-            name: 'ProfileAdvanced',
-            component: () => import('@/views/profile/advanced/Advanced'),
-            meta: { title: 'menu.profile.advanced', permission: ['profile'] }
+            meta: { title: 'menu.profile.basic', permission: ['profile'] },
+            props: true
           }
         ]
       },

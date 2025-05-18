@@ -31,7 +31,7 @@ const constantRouterComponents = {
   SearchArticles: () => import('@/views/list/search/Article'),
   SearchProjects: () => import('@/views/list/search/Projects'),
   SearchApplications: () => import('@/views/list/search/Applications'),
-  ProfileBasic: () => import('@/views/profile/basic'),
+  ProfileBasic: () => import('@/views/profile/basic/index'),
   ProfileAdvanced: () => import('@/views/profile/advanced/Advanced'),
 
   // community

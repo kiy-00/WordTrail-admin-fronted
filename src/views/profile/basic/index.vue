@@ -1,5 +1,6 @@
 <template>
-  <page-header-wrapper>
+  <div>
+  <page-header-wrapper v-if="inputId!=''">
     <a-card :bordered="false">
       <!-- 显示传入的 ID -->
       <a-descriptions title="文章详情">
@@ -25,7 +26,6 @@
           <img :src="url" alt="attachment" style="max-width: 100%; margin-bottom: 16px;" />
         </div>
       </div>
-
       <a-divider />
 
       <!-- 评论区 -->
@@ -38,13 +38,31 @@
       </div>
     </a-card>
   </page-header-wrapper>
+  <div v-else>
+    <page-header-wrapper>
+    <h2>请输入想要查询的帖子ID：</h2>
+      <a-input
+        type="text"
+        v-model="inputId"
+        placeholder="在此输入 ID"
+        style="width: 80%; margin:0px 16px 16px 0px;"
+      />
+      <a-button @click="onConfirm">确定</a-button>
+        </page-header-wrapper>
+  </div>
+  </div>
 </template>
 
 <script>
 import { getpostsid } from '@/api/manage'
 export default {
   // 通过路由配置 props: true 后可直接以 prop 接收参数
-  props: ['id'],
+  props: {
+    id: {
+      type: String,
+      default: '' // 如果父组件没传，就默认为空字符串
+    }
+  },
   data () {
     return {
       inputId: this.id || '', // 如果有传入id就使用，否则空
@@ -54,24 +72,35 @@ export default {
     }
   },
   methods: {
-    async fetchData () {
-      try {
-        getpostsid(this.id).then(res => {
-          console.log(res)
-          this.post = res.post
-          this.comments = res.comment
-        })
-      } catch (error) {
-        console.error('加载数据失败', error)
-      }
-    },
-    formatDate (datetime) {
-      const date = new Date(datetime)
-      return date.toLocaleString()
+      async fetchData () {
+        try {
+          getpostsid(this.inputId).then(res => {
+            console.log(res)
+            this.post = res.post
+            this.comments = res.comment
+          })
+        } catch (error) {
+          this.$message.error('加载数据失败')
+          console.error('加载数据失败', error)
+        }
+      },
+      formatDate (datetime) {
+        const date = new Date(datetime)
+        return date.toLocaleString()
+      },
+    onConfirm () {
+        if (!this.inputId.trim()) {
+          // 如果用户没输入，简单提示一下
+          alert('请输入有效的 ID')
+          return
+        }
+        this.fetchData()
     }
   },
   created () {
-    this.fetchData()
+    if (this.id !== '') {
+      this.fetchData()
+    }
   }
 }
 </script>

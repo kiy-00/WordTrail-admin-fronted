@@ -48,15 +48,9 @@ export const asyncRouterMap = [
         path: '/list',
         name: 'list',
         component: RouteView,
-        redirect: '/list/table-list',
+        redirect: '/list/card',
         meta: { title: 'menu.list', icon: 'table', permission: ['table'] },
         children: [
-          {
-            path: '/list/basic-list',
-            name: 'BasicList',
-            component: () => import('@/views/list/BasicList'),
-            meta: { title: 'menu.list.basic-list', keepAlive: true, permission: ['table'] }
-          },
           {
             path: '/list/card',
             name: 'CardList',
@@ -96,9 +90,9 @@ export const asyncRouterMap = [
         meta: { title: 'menu.profile', icon: 'profile', permission: ['profile'] },
         children: [
           {
-            path: '/profile/basic/:id',
+            path: '/profile/basic/:id?',
             name: 'ProfileBasic',
-            component: () => import('@/views/profile/basic'),
+            component: () => import('@/views/profile/basic/index'),
             meta: { title: 'menu.profile.basic', permission: ['profile'] },
             props: true
           }
@@ -106,56 +100,56 @@ export const asyncRouterMap = [
       },
 
       // result
-      {
-        path: '/result',
-        name: 'result',
-        component: RouteView,
-        redirect: '/result/success',
-        meta: { title: 'menu.result', icon: 'check-circle-o', permission: ['result'] },
-        children: [
-          {
-            path: '/result/success',
-            name: 'ResultSuccess',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
-            meta: { title: 'menu.result.success', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
-          },
-          {
-            path: '/result/fail',
-            name: 'ResultFail',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
-            meta: { title: 'menu.result.fail', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
-          }
-        ]
-      },
+      // {
+      //   path: '/result',
+      //   name: 'result',
+      //   component: RouteView,
+      //   redirect: '/result/success',
+      //   meta: { title: 'menu.result', icon: 'check-circle-o', permission: ['result'] },
+      //   children: [
+      //     {
+      //       path: '/result/success',
+      //       name: 'ResultSuccess',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
+      //       meta: { title: 'menu.result.success', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
+      //     },
+      //     {
+      //       path: '/result/fail',
+      //       name: 'ResultFail',
+      //       component: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
+      //       meta: { title: 'menu.result.fail', keepAlive: false, hiddenHeaderContent: true, permission: ['result'] }
+      //     }
+      //   ]
+      // },
 
       // Exception
-      {
-        path: '/exception',
-        name: 'exception',
-        component: RouteView,
-        redirect: '/exception/403',
-        meta: { title: 'menu.exception', icon: 'warning', permission: ['exception'] },
-        children: [
-          {
-            path: '/exception/403',
-            name: 'Exception403',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/403'),
-            meta: { title: 'menu.exception.not-permission', permission: ['exception'] }
-          },
-          {
-            path: '/exception/404',
-            name: 'Exception404',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
-            meta: { title: 'menu.exception.not-find', permission: ['exception'] }
-          },
-          {
-            path: '/exception/500',
-            name: 'Exception500',
-            component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
-            meta: { title: 'menu.exception.server-error', permission: ['exception'] }
-          }
-        ]
-      },
+      // {
+      //   path: '/exception',
+      //   name: 'exception',
+      //   component: RouteView,
+      //   redirect: '/exception/403',
+      //   meta: { title: 'menu.exception', icon: 'warning', permission: ['exception'] },
+      //   children: [
+      //     {
+      //       path: '/exception/403',
+      //       name: 'Exception403',
+      //       component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/403'),
+      //       meta: { title: 'menu.exception.not-permission', permission: ['exception'] }
+      //     },
+      //     {
+      //       path: '/exception/404',
+      //       name: 'Exception404',
+      //       component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
+      //       meta: { title: 'menu.exception.not-find', permission: ['exception'] }
+      //     },
+      //     {
+      //       path: '/exception/500',
+      //       name: 'Exception500',
+      //       component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
+      //       meta: { title: 'menu.exception.server-error', permission: ['exception'] }
+      //     }
+      //   ]
+      // },
       // account
       {
         path: '/account',

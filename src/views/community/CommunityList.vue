@@ -439,7 +439,7 @@ export default {
     },
     handleReportCancel () {
       console.log('取消删除')
-      this.reportstateModalVisible = false
+      this.reportModalVisible = false
     },
     handleReportStateCancel () {
       console.log('取消删除')

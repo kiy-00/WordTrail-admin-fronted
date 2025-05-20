@@ -81,7 +81,7 @@
           okText="确认"
           cancelText="取消"
         >
-          <p>是否更改状态 "{{ currentPost?.title }}"？</p>
+          <p>是否更改状态 "{{ currentPost?.username }}"？</p>
           <p>当前状态 "{{ currentPost?.state }}"</p>
           <a-form-item label="状态">
             <a-select v-model="currentstate" style="width: 100%">
@@ -101,15 +101,10 @@
 import {
   getuserscount,
   getuser,
-  postsetstate
+  postusersetstate
  } from '@/api/manage'
 
 const columns = [
-{
-        title: 'ID',
-        dataIndex: 'id',
-        key: 'id'
-      },
       {
         title: '用户ID',
         dataIndex: 'userId',
@@ -222,14 +217,14 @@ export default {
     // 跳转到第一页
     goToFirstPage () {
       this.currentPage = 1
-      this.Getpost(this.currentPage)
+      this.Getuser(this.currentPage)
     },
 
     // 跳转到上一页
     goToPreviousPage () {
       if (this.currentPage > 1) {
         this.currentPage -= 1
-        this.Getpost(this.currentPage)
+        this.Getuser(this.currentPage)
       }
     },
 
@@ -237,38 +232,34 @@ export default {
     goToNextPage () {
       if (this.currentPage < this.totalPages) {
         this.currentPage += 1
-        this.Getpost(this.currentPage)
+        this.Getuser(this.currentPage)
       }
     },
 
     // 跳转到最后一页
     goToLastPage () {
       this.currentPage = this.totalPages
-      this.Getpost(this.currentPage)
+      this.Getuser(this.currentPage)
     },
 
     // 处理页码输入框变化
     handlePageInputChange (page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page
-        this.Getpost(this.currentPage)
+        this.Getuser(this.currentPage)
       } else {
         this.$message.error('请输入有效的页码')
       }
     },
     handleReportStateOk () {
-      postsetstate(this.currentPost.id, this.currentstate).then(res => {
+      postusersetstate(this.currentPost.id, this.currentstate).then(res => {
         this.$message.success('更改成功')
         this.reportstateModalVisible = false
-        this.Getpost(this.currentPage) // 刷新帖子列表
+        this.Getuser(this.currentPage) // 刷新帖子列表
       }).catch(err => {
         console.error('更改失败:', err)
         this.$message.error('更改失败，请稍后再试')
       })
-    },
-    handleReportCancel () {
-      console.log('取消删除')
-      this.reportstateModalVisible = false
     },
     handleReportStateCancel () {
       console.log('取消删除')

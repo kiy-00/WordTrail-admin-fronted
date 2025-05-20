@@ -215,10 +215,10 @@ export function getpostsid (id) {
   })
 }
 
-export function deletepostidcomment (id, commentId, message) {
+export function deletepostidcomment (commentId, message) {
   return request({
-    url: `http://localhost:8082/admin/posts/${id}`,
-    method: 'post',
+    url: `http://localhost:8082/admin/posts/comsearchpoststatement`,
+    method: 'delete',
     data: {
       commentId,
       message

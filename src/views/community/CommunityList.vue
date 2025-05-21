@@ -42,6 +42,8 @@
             :key="column.key"
             :title="column.title"
             :dataIndex="column.dataIndex"
+            width="25px"
+            :ellipsis="true"
           />
           <!-- 添加“操作”列 -->
           <a-table-column title="操作" key="actions" width="10%">
@@ -189,12 +191,12 @@ const columns = [
     key: 'title'
   },
   {
-    title: '帖子更新时间',
+    title: '更新时间',
     dataIndex: 'updatedTime',
     key: 'updatedTime'
   },
   {
-    title: '帖子创建时间',
+    title: '创建时间',
     dataIndex: 'createdTime',
     key: 'createdTime'
   },
@@ -204,12 +206,12 @@ const columns = [
     key: 'content'
   },
   {
-    title: '帖子发布用户名',
+    title: '用户名',
     dataIndex: 'username',
     key: 'username'
   },
   {
-    title: '帖子发布用户Id',
+    title: '用户Id',
     dataIndex: 'userId',
     key: 'userId'
   },
@@ -219,12 +221,12 @@ const columns = [
     key: 'state'
   },
   {
-    title: '帖子评论数',
+    title: '评论数',
     dataIndex: 'commentCount',
     key: 'commentCount'
   },
   {
-    title: '帖子点赞数',
+    title: '点赞数',
     dataIndex: 'voteCount',
     key: 'voteCount'
   }
@@ -455,7 +457,6 @@ export default {
 
 <style lang="less" scoped>
   @import "~@/components/index.less";
-
   .card-list {
     :deep(.ant-card-body:hover) {
       .ant-card-meta-title>a {

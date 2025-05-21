@@ -91,6 +91,11 @@
               <a-select-option value="deleted">已处理：不可见</a-select-option>
             </a-select>
           </a-form-item>
+          <a-textarea
+            v-model="reportReason"
+            placeholder="请输入删除原因"
+            :autoSize="{ minRows: 3, maxRows: 5 }"
+          />
         </a-modal>
       </div>
     </page-header-wrapper>
@@ -206,6 +211,7 @@ export default {
     openReportStateModal (scope) {
       this.currentPost = scope
       this.currentstate = scope.state
+      this.reportReason = ''
       this.reportstateModalVisible = true
     },
     // 处理页码变化
@@ -252,7 +258,11 @@ export default {
       }
     },
     handleReportStateOk () {
-      postusersetstate(this.currentPost.id, this.currentstate).then(res => {
+      if (!this.reportReason.trim()) {
+        this.$message.warning('请填写删除原因')
+        return
+      }
+      postusersetstate(this.currentPost.userId, this.currentstate, this.reportReason).then(res => {
         this.$message.success('更改成功')
         this.reportstateModalVisible = false
         this.Getuser(this.currentPage) // 刷新帖子列表

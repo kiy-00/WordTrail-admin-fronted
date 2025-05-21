@@ -7,22 +7,19 @@
         </div>
         <div class="content">
           <div class="content-title">
-            {{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome }}</span>
+            {{ timeFix }}，{{ name }}<span class="welcome-text">，{{ welcome }}</span>
           </div>
-          <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
+          <div>管理员 | WordTrail</div>
         </div>
       </div>
     </template>
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="项目数" :value="56" />
+          <a-statistic title="帖子总数" :value="postcount" />
         </div>
         <div class="stat-item">
-          <a-statistic title="团队内排名" :value="8" suffix="/ 24" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="项目访问" :value="2223" />
+          <a-statistic title="用户总数" :value="userscount"/>
         </div>
       </div>
     </template>
@@ -38,45 +35,25 @@
             title="进行中的项目"
             :body-style="{ padding: 0 }"
           >
-            <a slot="extra">全部项目</a>
-            <div>
-              <a-card-grid class="project-card-grid" :key="i" v-for="(item, i) in projects">
-                <a-card :bordered="false" :body-style="{ padding: 0 }">
-                  <a-card-meta>
-                    <div slot="title" class="card-title">
-                      <a-avatar size="small" :src="item.cover" />
-                      <a>{{ item.title }}</a>
-                    </div>
-                    <div slot="description" class="card-description">
-                      {{ item.description }}
-                    </div>
-                  </a-card-meta>
-                  <div class="project-item">
-                    <a href="/#/">科学搬砖组</a>
-                    <span class="datetime">9小时前</span>
-                  </div>
-                </a-card>
-              </a-card-grid>
-            </div>
+            <a slot="extra" href="/community/list">被举报帖子</a>
+            <a-table
+              :dataSource="searchData"
+              :pageSize="5"
+              rowKey="id"
+              bordered
+              style="margin-top: 10px;"
+              :scroll="{ x: '100%' }"
+            >
+              <a-table-column
+                v-for="column in columns"
+                :key="column.key"
+                :title="column.title"
+                :dataIndex="column.dataIndex"
+                width="25px"
+              />
+            </a-table>
           </a-card>
 
-          <a-card :loading="loading" title="动态" :bordered="false">
-            <a-list>
-              <a-list-item :key="index" v-for="(item, index) in activities">
-                <a-list-item-meta>
-                  <a-avatar slot="avatar" size="small" :src="item.user.avatar" />
-                  <div slot="title">
-                    <span>{{ item.user.nickname }}</span
-                    >&nbsp; 在&nbsp;<a href="#">{{ item.project.name }}</a
-                    >&nbsp; <span>{{ item.project.action }}</span
-                    >&nbsp;
-                    <a href="#">{{ item.project.event }}</a>
-                  </div>
-                  <div slot="description">{{ item.time }}</div>
-                </a-list-item-meta>
-              </a-list-item>
-            </a-list>
-          </a-card>
         </a-col>
         <a-col
           style="padding: 0 12px"
@@ -92,37 +69,26 @@
             :body-style="{ padding: 0 }"
           >
             <div class="item-group">
-              <a>操作一</a>
-              <a>操作二</a>
-              <a>操作三</a>
-              <a>操作四</a>
-              <a>操作五</a>
-              <a>操作六</a>
-              <a-button size="small" type="primary" ghost icon="plus">添加</a-button>
-            </div>
-          </a-card>
-          <a-card
-            title="XX 指数"
-            style="margin-bottom: 24px"
-            :loading="radarLoading"
-            :bordered="false"
-            :body-style="{ padding: 0 }"
-          >
-            <div style="min-height: 400px;">
-              <!-- :scale="scale" :axis1Opts="axis1Opts" :axis2Opts="axis2Opts"  -->
-              <radar :data="radarData" />
-            </div>
-          </a-card>
-          <a-card :loading="loading" title="团队" :bordered="false">
-            <div class="members">
-              <a-row>
-                <a-col :span="12" v-for="(item, index) in teams" :key="index">
-                  <a>
-                    <a-avatar size="small" :src="item.avatar" />
-                    <span class="member">{{ item.name }}</span>
-                  </a>
-                </a-col>
-              </a-row>
+              <a href="/community/userlist">
+                <a-icon type="team" />
+                <span>用户列表</span>
+              </a>
+              <a href="/community/list">
+                <a-icon type="file-text" />
+                <span>帖子列表</span>
+              </a>
+              <a href="/list/card">
+                <a-icon type="file-text" />
+                <span>词书列表</span>
+              </a>
+              <a href="/profile/basic">
+                <a-icon type="project" />
+                <span>帖子查找</span>
+              </a>
+              <a href="/account/accountsettings">
+                <a-icon type="user" />
+                <span>个人信息</span>
+              </a>
             </div>
           </a-card>
         </a-col>
@@ -136,12 +102,53 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import { Radar } from '@/components'
-import { SHOW_AVATAR } from '@/store/mutation-types'
+import { SHOW_AVATAR, SHOW_NAME } from '@/store/mutation-types'
 import storage from 'store'
-import { getRoleList, getServiceList } from '@/api/manage'
+import {
+  getuserscount,
+  getpostcount,
+  getsearchpoststate
+ } from '@/api/manage'
 
 const DataSet = require('@antv/data-set')
 
+const columns = [
+  {
+    title: '帖子Id',
+    dataIndex: 'id',
+    key: 'id'
+  },
+  {
+    title: '帖子标题',
+    dataIndex: 'title',
+    key: 'title'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'updatedTime',
+    key: 'updatedTime'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdTime',
+    key: 'createdTime'
+  },
+  {
+    title: '用户名',
+    dataIndex: 'username',
+    key: 'username'
+  },
+  {
+    title: '用户Id',
+    dataIndex: 'userId',
+    key: 'userId'
+  },
+  {
+    title: '帖子状态',
+    dataIndex: 'state',
+    key: 'state'
+  }
+]
 export default {
   name: 'Workplace',
   components: {
@@ -150,16 +157,19 @@ export default {
   },
   data () {
     return {
+      post: [],
+      postcount: 0,
+      userscount: 0,
       timeFix: timeFix(),
       avatar: '',
-      user: {},
-
+      name: '',
+      searchData: [],
       projects: [],
       loading: true,
       radarLoading: true,
       activities: [],
       teams: [],
-
+      columns,
       // data
       axis1Opts: {
         dataKey: 'item',
@@ -203,12 +213,12 @@ export default {
   },
   computed: {
     ...mapState({
-      nickname: state => state.user.nickname,
+      nickname: state => state.user.name,
       welcome: state => state.user.welcome
     }),
     currentUser () {
       return {
-        name: 'Serati Ma',
+        name: `${storage.get(SHOW_NAME)}`,
         avatar: `${storage.get(SHOW_AVATAR)}`
       }
     },
@@ -217,16 +227,11 @@ export default {
     }
   },
   created () {
-    this.user = this.userInfo
+    this.name = `${storage.get(SHOW_NAME)}`
     this.avatar = this.userInfo.avatar
-
-    getRoleList().then(res => {
-      // console.log('workplace -> call getRoleList()', res)
-    })
-
-    getServiceList().then(res => {
-      // console.log('workplace -> call getServiceList()', res)
-    })
+    this.getcount()
+    this.getuserscount()
+    this.searchreported()
   },
   mounted () {
     this.getProjects()
@@ -235,6 +240,25 @@ export default {
     this.initRadar()
   },
   methods: {
+    searchreported () {
+      this.loading = true
+      getsearchpoststate('reported').then(res => {
+        console.log(res)
+        this.searchData = res.data
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    getcount () {
+      getpostcount().then(res => {
+        this.postcount = res.data[0].count
+      })
+    },
+    getuserscount () {
+      getuserscount().then(res => {
+        this.userscount = res.count
+      })
+    },
     getProjects () {
       this.$http.get('/list/search/projects').then(res => {
         this.projects = res.result && res.result.data

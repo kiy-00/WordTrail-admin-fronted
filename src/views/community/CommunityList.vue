@@ -146,6 +146,7 @@
             bordered
             style="margin-top: 10px;"
             :scroll="{ x: '100%' }"
+            :ellipsis="true"
           >
             <a-table-column
               v-for="column in columns"
@@ -160,6 +161,8 @@
                 <a @click="openReportModal(scope)">删除帖子</a>
                 <p></p>
                 <a @click="openReportStateModal(scope)">更改状态</a>
+                <p></p>
+                <a @click="openReportInfoModal(scope)">查看详情</a>
               </template>
             </a-table-column>
           </a-table>

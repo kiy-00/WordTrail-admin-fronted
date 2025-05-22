@@ -16,7 +16,8 @@ const api = {
   searchpostusername: 'http://localhost:8082/admin/searchpostusername',
   searchpostuserid: 'http://localhost:8082/admin/searchpostuserId',
   searchpoststate: 'http://localhost:8082/admin/searchpoststate',
-  getuserscount: 'http://localhost:8082/admin/getuserscount'
+  getuserscount: 'http://localhost:8082/admin/getuserscount',
+  check: 'http://localhost:8082/api/v1/ai/check-user-content'
 }
 
 export default api
@@ -26,6 +27,16 @@ export function getUserList (parameter) {
     url: api.user,
     method: 'get',
     params: parameter
+  })
+}
+
+export function postAIcheck (content) {
+  return request({
+    url: api.check,
+    method: 'get',
+    params: {
+      content
+    }
   })
 }
 

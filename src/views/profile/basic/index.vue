@@ -13,9 +13,6 @@
         <a-descriptions title="文章详情">
           <a-descriptions-item label="文章ID">{{ id }}</a-descriptions-item>
           <a-descriptions-item label="标题">{{ post.title }}</a-descriptions-item>
-          <a-descriptions-item label="内容">
-            <div style="white-space: pre-wrap;">{{ post.content }}</div>
-          </a-descriptions-item>
           <a-descriptions-item label="作者">{{ post.userId }}</a-descriptions-item>
           <a-descriptions-item label="评论数">{{ post.commentCount }}</a-descriptions-item>
           <a-descriptions-item label="点赞数">{{ post.voteCount }}</a-descriptions-item>
@@ -29,6 +26,8 @@
 
         <!-- 附件图片 -->
         <div v-if="post.filePaths.length" class="image-list">
+          <div>内容:</div>
+          <div style="white-space: pre-wrap;">{{ post.content }}</div>
           <div v-for="(url, index) in post.filePaths" :key="index" class="image-item">
             <img :src="url" alt="attachment" style="max-width: 100%; margin-bottom: 16px;" />
           </div>
